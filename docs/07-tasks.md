@@ -57,7 +57,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_ — `RegisterPatient` + shared `PatientRules` (clean-up, validation)
 - [x] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_ — `PossibleDuplicates::check`: same phone + same name / similar name + age / family on the number; never blocks (families share phones); shown on the form in M03-05
 - [x] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_ — `/patients` + `SearchPatients`; sidebar "Find patient" box (press `/`); lab staff (`patients.view_minimal`) see/search name+code only; rows link to the profile once M03-06 exists
-- [ ] **M03-05** (M) Register / edit patient form · _M03-02_
+- [x] **M03-05** (M) Register / edit patient form · _M03-02_ — `/patients/register`, `/patients/{id}/edit`; `UpdatePatient`; guardian name + relation (asked for under 18); live duplicate panel; "probably the same person" needs a tick to continue
 - [ ] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_
 - [ ] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_
 

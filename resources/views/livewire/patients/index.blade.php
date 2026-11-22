@@ -32,11 +32,14 @@ new #[Title('Patients')] class extends Component {
                 ->with('mergedInto:id,patient_code')
                 ->paginate(25),
             'full' => $full,
+            'canCreate' => Gate::allows('patients.create'),
+            'canUpdate' => Gate::allows('patients.update'),
         ];
     }
 }; ?>
 
 <div class="flex flex-col gap-6 p-6">
+    <div class="flex flex-wrap items-end justify-between gap-4">
     <div>
         <flux:heading size="xl" level="1">{{ __('Patients') }}</flux:heading>
         <flux:subheading>
@@ -45,6 +48,15 @@ new #[Title('Patients')] class extends Component {
                 : __('Search by name, patient code or old ID.') }}
         </flux:subheading>
     </div>
+
+        @if ($canCreate)
+            <flux:button variant="primary" icon="plus" :href="route('patients.create')" wire:navigate>{{ __('Register patient') }}</flux:button>
+        @endif
+    </div>
+
+    @if (session('status'))
+        <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
+    @endif
 
     <div class="grid gap-3 sm:grid-cols-3">
         <div class="sm:col-span-2">
@@ -68,6 +80,9 @@ new #[Title('Patients')] class extends Component {
                 <flux:table.column>{{ __('Registered') }}</flux:table.column>
             @endif
             <flux:table.column>{{ __('Status') }}</flux:table.column>
+            @if ($canUpdate)
+                <flux:table.column />
+            @endif
         </flux:table.columns>
 
         <flux:table.rows>
@@ -98,10 +113,22 @@ new #[Title('Patients')] class extends Component {
                             <flux:badge size="sm" color="green">{{ __('Active') }}</flux:badge>
                         @endif
                     </flux:table.cell>
+                    @if ($canUpdate)
+                        <flux:table.cell align="end">
+                            @unless ($patient->merged_into_id)
+                                <flux:button size="sm" variant="ghost" icon="pencil-square" :href="route('patients.edit', $patient)" wire:navigate>{{ __('Edit') }}</flux:button>
+                            @endunless
+                        </flux:table.cell>
+                    @endif
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="5" class="text-center text-zinc-500">{{ __('No patients found.') }}</flux:table.cell>
+                    <flux:table.cell colspan="6" class="text-center text-zinc-500">
+                        {{ __('No patients found.') }}
+                        @if ($canCreate && trim($search) !== '')
+                            <flux:link :href="route('patients.create', ['name' => trim($search)])" wire:navigate>{{ __('Register “:name” as a new patient', ['name' => trim($search)]) }}</flux:link>
+                        @endif
+                    </flux:table.cell>
                 </flux:table.row>
             @endforelse
         </flux:table.rows>

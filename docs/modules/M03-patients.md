@@ -12,7 +12,9 @@ Register, find, and maintain patient records; the patient profile is the hub tha
   - Active patients by default; inactive / all (incl. merged) on request.
   - `patients.view_minimal` (lab coordinator) sees and searches only name + code, never phone.
 - One phone can belong to several patients (family); each still gets their own code. Registration shows possible duplicates (`PossibleDuplicates::check`): same phone + same name, similar name + age, family on the number. Never blocks.
-- Edit demographics; deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).
+- Register / edit form: duplicate panel updates while typing (probably the same person · same name and age · others on this number); "probably the same person" needs an explicit tick before registering.
+- Parent/guardian name + relation, highlighted when the patient is under 18.
+- Edit demographics (code and registration date never change; age typed earlier keeps growing unless corrected); deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).
 - Patient profile page with tabs: Overview · Timeline · Appointments · Visits · Dental chart · Prescriptions · Billing · Lab · Files.
 - Alerts banner (allergies, conditions) on profile and visit screens, each with date + who recorded + source. *(Phase 2)*
 - Medical history and consent records. *(Phase 2)*

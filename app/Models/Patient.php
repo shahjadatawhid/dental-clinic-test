@@ -32,6 +32,8 @@ use Illuminate\Support\Carbon;
  * @property string $preferred_language
  * @property string|null $emergency_contact_name
  * @property string|null $emergency_contact_phone
+ * @property string|null $guardian_name
+ * @property string|null $guardian_relation
  * @property string|null $referred_by
  * @property string|null $notes
  * @property bool $is_active
@@ -47,8 +49,15 @@ class Patient extends Model
     protected $fillable = [
         'legacy_code', 'full_name', 'gender', 'date_of_birth', 'age_years', 'age_recorded_on',
         'phone', 'alt_phone', 'email', 'address', 'occupation', 'preferred_language',
-        'emergency_contact_name', 'emergency_contact_phone', 'referred_by', 'notes', 'is_active',
+        'emergency_contact_name', 'emergency_contact_phone', 'guardian_name', 'guardian_relation',
+        'referred_by', 'notes', 'is_active',
     ];
+
+    /** Who may bring a child or sign for them. */
+    public const GUARDIAN_RELATIONS = ['mother', 'father', 'grandparent', 'sibling', 'spouse', 'other'];
+
+    /** Below this age the form asks for a parent or guardian. */
+    public const ADULT_AGE = 18;
 
     protected $attributes = [
         'is_active' => true,

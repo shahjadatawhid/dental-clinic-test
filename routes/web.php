@@ -20,6 +20,8 @@ Route::middleware(['auth'])->group(function () {
 // M03 Patients
 Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('patients', 'patients.index')->middleware('permission:patients.view|patients.view_minimal')->name('patients.index');
+    Volt::route('patients/register', 'patients.form')->middleware('permission:patients.create')->name('patients.create');
+    Volt::route('patients/{patient}/edit', 'patients.form')->middleware('permission:patients.update')->name('patients.edit');
 });
 
 // M02 Staff & schedules

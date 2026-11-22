@@ -2,6 +2,7 @@
 
 namespace App\Actions\Patients;
 
+use App\Models\Patient;
 use App\Support\Phone;
 use Illuminate\Validation\Rule;
 
@@ -31,6 +32,8 @@ final class PatientRules
             'preferred_language' => ['nullable', Rule::in(['bn', 'en'])],
             'emergency_contact_name' => ['nullable', 'string', 'max:255'],
             'emergency_contact_phone' => ['nullable', 'regex:'.Phone::BD_MOBILE],
+            'guardian_name' => ['nullable', 'string', 'max:255'],
+            'guardian_relation' => ['nullable', Rule::in(Patient::GUARDIAN_RELATIONS)],
             'referred_by' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'legacy_code' => ['nullable', 'string', 'max:30'],
