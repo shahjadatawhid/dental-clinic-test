@@ -47,7 +47,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 ### M02 Staff & schedules
 - [x] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — Staff, Doctor, Room, Chair + factories; Auditable + HasUserstamps
 - [x] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_ — `/staff`; SaveStaff action; private signature upload; phone normalised
-- [ ] **M02-03** (S) Rooms & chairs CRUD · _M02-01_
+- [x] **M02-03** (S) Rooms & chairs CRUD · _M02-01_ — `/rooms` single page, inline edit, deactivate only
 - [ ] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_
 - [ ] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_
 - [ ] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_

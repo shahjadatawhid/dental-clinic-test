@@ -22,6 +22,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('staff', 'staff.index')->middleware('permission:staff.view')->name('staff.index');
     Volt::route('staff/create', 'staff.form')->middleware('permission:staff.manage')->name('staff.create');
     Volt::route('staff/{staff}/edit', 'staff.form')->middleware('permission:staff.manage')->name('staff.edit');
+
+    Volt::route('rooms', 'rooms.index')->middleware('permission:staff.view')->name('rooms.index');
 });
 
 // M01 Administration
