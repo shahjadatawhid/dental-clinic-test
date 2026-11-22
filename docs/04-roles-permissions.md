@@ -2,6 +2,13 @@
 
 Implemented with `spatie/laravel-permission`. Roles are **templates**; an admin can adjust them, but changing access to clinical or financial records requires the `roles.manage` permission and is written to the audit log.
 
+## Where this lives in code
+
+- Permission list + role templates: [app/Authorization/Permissions.php](../app/Authorization/Permissions.php) — **the source of truth**; keep this doc in sync with it.
+- Role names: [app/Enums/RoleName.php](../app/Enums/RoleName.php)
+- Sync to database: `php artisan app:sync-permissions` — creates missing permissions/roles; new roles get their template; existing roles are left alone so admin changes survive. `--reset-roles` overwrites every role with its template.
+- Tests: [tests/Feature/Authorization/RolesAndPermissionsTest.php](../tests/Feature/Authorization/RolesAndPermissionsTest.php)
+
 ## Permission naming
 
 `<resource>.<action>` where action ∈ `view`, `create`, `update`, `approve`, `void`, `export`, `manage`.

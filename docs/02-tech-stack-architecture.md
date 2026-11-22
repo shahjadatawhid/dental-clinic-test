@@ -64,7 +64,7 @@ docs/
 - **Business logic lives in Actions/Services**, not in Livewire components or controllers. Components call actions.
 - **Every money-changing action runs in `DB::transaction()`.**
 - **Money:** `decimal(12,2)` columns, cast with a Money/decimal cast; never use float math. All amounts in BDT.
-- **Dates:** store `timestamp` in UTC, display in `Asia/Dhaka`. Business dates (invoice date, voucher date, closing date) are `date` columns in clinic local time.
+- **Dates:** app timezone is `Asia/Dhaka` (single clinic, no DST), so timestamps are stored and shown in Dhaka time. Business dates (invoice date, voucher date, closing date) are `date` columns.
 - **Enums:** PHP backed enums for statuses; never magic strings.
 - **Soft deletes** only for master data (patients, medicines, procedures). Financial records are never deleted — they get `status = void` + reason.
 - **Authorization:** every Livewire action calls `$this->authorize()` / policies. Never rely on hiding buttons.

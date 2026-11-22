@@ -20,7 +20,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [ ] **P0-07** (S) Decide hosting (Q14) — must support PHP 8.3+ and MySQL 8 (stack decided: Laravel + MySQL + Tailwind)
 
 ### P0 Environment
-- [ ] **P0-08** (S) Install PHP 8.3+, Composer, Node, Git, MySQL 8 (Laragon recommended on Windows — bundles MySQL)
+- [x] **P0-08** (S) Install PHP 8.3+, Composer, Node, Git, MySQL 8 (Laragon recommended on Windows — bundles MySQL)
 - [ ] **P0-09** (S) `git init`, create GitHub private repo, push docs
 
 ---
@@ -28,11 +28,11 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 ## Phase 1 — First release
 
 ### M01 Foundation
-- [ ] **M01-01** (S) Create Laravel project; configure `.env`, timezone `Asia/Dhaka`, locale · _P0-08_
-- [ ] **M01-02** (S) Install Tailwind, Livewire, Alpine; base layout (sidebar, topbar) · _M01-01_
-- [ ] **M01-03** (S) Install Pest, Pint, Larastan; add `composer test` / `lint` scripts · _M01-01_
-- [ ] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_
-- [ ] **M01-05** (M) Install spatie/laravel-permission; seed permissions + 8 role templates from doc 04 · _M01-04_
+- [x] **M01-01** (S) Create Laravel project; configure `.env`, timezone `Asia/Dhaka`, locale · _P0-08_
+- [x] **M01-02** (S) Install Tailwind, Livewire, Alpine; base layout (sidebar, topbar) · _M01-01_
+- [x] **M01-03** (S) Install Pest, Pint, Larastan; add `composer test` / `lint` scripts · _M01-01_
+- [~] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_ — login/reset done by starter kit; public self-registration must be removed in M01-06
+- [x] **M01-05** (M) Install spatie/laravel-permission; seed permissions + 8 role templates from doc 04 · _M01-04_ — `app/Authorization/Permissions.php`, `php artisan app:sync-permissions`
 - [ ] **M01-06** (M) User management screen (list, create, deactivate, assign roles) · _M01-05_
 - [ ] **M01-07** (S) Block login for inactive users 🧪 · _M01-06_
 - [ ] **M01-08** (M) Roles & permissions editor (admin) with audit of changes · _M01-05, M01-10_

@@ -4,6 +4,41 @@ One system for patient care, appointments, clinic operations, and finances.
 
 > **Status:** Planning. No code yet. Use **fictional data only** until the launch safeguards in [docs/03-business-rules.md](docs/03-business-rules.md) are done.
 
+## Stack
+
+Laravel 12 · Livewire 4 (+ Flux UI) · Tailwind CSS 4 · MySQL 8 (MariaDB 10.11 via XAMPP works for local dev) · Pest · Pint · Larastan
+
+## Local setup (Windows + XAMPP)
+
+Requirements: PHP 8.3+ with `pdo_mysql`, `mbstring`, `intl`, `gd`, `zip`, `sodium` enabled in `php.ini`; Composer; Node 20+; MySQL/MariaDB running.
+
+```bash
+# 1. Create databases (once)
+mysql -u root -e "CREATE DATABASE dental_clinic CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mysql -u root -e "CREATE DATABASE dental_clinic_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 2. Install
+composer install
+npm install
+cp .env.example .env      # then check DB_* values
+php artisan key:generate
+php artisan migrate --seed
+
+# 3. Run (server + queue + vite)
+composer dev              # open http://127.0.0.1:8000
+```
+
+**Development logins** (created by `php artisan migrate --seed` in `local` only; password `password`):
+`system-admin@clinic.test`, `owner@clinic.test`, `manager@clinic.test`, `receptionist@clinic.test`, `doctor@clinic.test`, `accountant@clinic.test`, `lab-coordinator@clinic.test`, `inventory-staff@clinic.test`
+
+| Command | What it does |
+|---------|--------------|
+| `composer test` | Run Pest tests (uses `dental_clinic_test` DB) |
+| `composer lint` | Fix code style (Pint) |
+| `composer lint:check` | Check style without changing files |
+| `composer analyse` | Static analysis (Larastan) |
+| `npm run build` | Build CSS/JS for production |
+
 ## Planning documents
 
 | # | Document | What it covers |
