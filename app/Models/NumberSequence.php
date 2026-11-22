@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\SequenceSeries;
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasUserstamps;
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -43,12 +44,17 @@ class NumberSequence extends Model
         return $this->reset_yearly ? $year : 0;
     }
 
-    public function formatNumber(int $value, int $year): string
+    /**
+     * Tokens: {prefix}, {year} (2026), {yy} (26), {mm} (01–12), {number} (zero-padded counter).
+     * Year and month come from the document's date (registration date, receipt date...).
+     */
+    public function formatNumber(int $value, CarbonInterface $date): string
     {
         return strtr($this->format, [
             '{prefix}' => $this->prefix,
-            '{year}' => (string) $year,
-            '{yy}' => substr((string) $year, -2),
+            '{year}' => $date->format('Y'),
+            '{yy}' => $date->format('y'),
+            '{mm}' => $date->format('m'),
             '{number}' => str_pad((string) $value, $this->padding, '0', STR_PAD_LEFT),
         ]);
     }

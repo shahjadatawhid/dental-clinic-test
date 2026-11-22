@@ -22,9 +22,10 @@ class NumberSequenceService
 {
     public function next(SequenceSeries $series, ?CarbonInterface $date = null): string
     {
-        $year = (int) ($date ?? now())->format('Y');
+        $date ??= now();
+        $year = (int) $date->format('Y');
 
-        return DB::transaction(function () use ($series, $year) {
+        return DB::transaction(function () use ($series, $year, $date) {
             $sequence = $this->sequence($series);
             $period = $sequence->periodFor($year);
 
@@ -47,7 +48,7 @@ class NumberSequenceService
             $counter->last_value++;
             $counter->save();
 
-            return $sequence->formatNumber($counter->last_value, $year);
+            return $sequence->formatNumber($counter->last_value, $date);
         });
     }
 
@@ -57,15 +58,15 @@ class NumberSequenceService
      */
     public function preview(SequenceSeries $series, ?CarbonInterface $date = null): string
     {
-        $year = (int) ($date ?? now())->format('Y');
+        $date ??= now();
         $sequence = $this->sequence($series);
 
         $last = (int) NumberSequenceCounter::query()
             ->where('number_sequence_id', $sequence->id)
-            ->where('period', $sequence->periodFor($year))
+            ->where('period', $sequence->periodFor((int) $date->format('Y')))
             ->value('last_value');
 
-        return $sequence->formatNumber($last + 1, $year);
+        return $sequence->formatNumber($last + 1, $date);
     }
 
     private function lockedCounter(int $sequenceId, int $period): ?NumberSequenceCounter

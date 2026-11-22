@@ -14,7 +14,7 @@ beforeEach(function () {
 it('formats each series from its defaults', function () {
     $date = Carbon::parse('2026-03-15');
 
-    expect($this->numbers->next(SequenceSeries::Patient, $date))->toBe('FD-000001')
+    expect($this->numbers->next(SequenceSeries::Patient, $date))->toBe('FD-03-26-000001')
         ->and($this->numbers->next(SequenceSeries::ReceiptVoucher, $date))->toBe('RV-2026-000001')
         ->and($this->numbers->next(SequenceSeries::PaymentVoucher, $date))->toBe('PV-2026-000001')
         ->and($this->numbers->next(SequenceSeries::Invoice, $date))->toBe('INV-2026-000001')
@@ -58,11 +58,25 @@ it('releases the number when the saving transaction fails', function () {
 });
 
 it('previews the next number without taking it', function () {
-    $preview = $this->numbers->preview(SequenceSeries::Patient);
+    $date = Carbon::parse('2026-11-22');
+    $preview = $this->numbers->preview(SequenceSeries::Patient, $date);
 
-    expect($preview)->toBe('FD-000001')
-        ->and($this->numbers->preview(SequenceSeries::Patient))->toBe('FD-000001')
-        ->and($this->numbers->next(SequenceSeries::Patient))->toBe($preview);
+    expect($preview)->toBe('FD-11-26-000001')
+        ->and($this->numbers->preview(SequenceSeries::Patient, $date))->toBe('FD-11-26-000001')
+        ->and($this->numbers->next(SequenceSeries::Patient, $date))->toBe($preview);
+});
+
+it('gives patient codes the registration month and year, and never restarts the counter', function () {
+    expect($this->numbers->next(SequenceSeries::Patient, Carbon::parse('2026-11-22')))->toBe('FD-11-26-000001')
+        ->and($this->numbers->next(SequenceSeries::Patient, Carbon::parse('2026-11-30')))->toBe('FD-11-26-000002')
+        ->and($this->numbers->next(SequenceSeries::Patient, Carbon::parse('2026-12-01')))->toBe('FD-12-26-000003')
+        ->and($this->numbers->next(SequenceSeries::Patient, Carbon::parse('2027-01-02')))->toBe('FD-01-27-000004');
+});
+
+it('never clashes with the clinic\'s old 4-digit patient IDs', function () {
+    $new = $this->numbers->next(SequenceSeries::Patient, Carbon::parse('2023-01-10'));
+
+    expect($new)->toBe('FD-01-23-000001')->not->toBe('FD-01-23-0001');
 });
 
 it('uses a changed prefix and format for later numbers and audits the change', function () {

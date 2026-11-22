@@ -82,8 +82,8 @@ docs/
 - **Tests:** each Action has a feature test. Money and sequence logic must have tests before merge.
 
 ### Number sequences
-- Series are the `App\Enums\SequenceSeries` cases (patient, invoice, receipt_voucher, payment_voucher, lab_order, purchase) with default formats (`FD-000001`, `RV-2026-000001`...).
-- `number_sequences` holds each series' prefix / format (`{prefix}`, `{year}`, `{yy}`, `{number}`) / padding / `reset_yearly`; `number_sequence_counters` holds the counter per period (the year if `reset_yearly`, else 0), so back-dated documents use their own year's counter.
+- Series are the `App\Enums\SequenceSeries` cases (patient, invoice, receipt_voucher, payment_voucher, lab_order, purchase) with default formats (`FD-11-26-000001`, `RV-2026-000001`...).
+- `number_sequences` holds each series' prefix / format (`{prefix}`, `{year}`, `{yy}`, `{mm}`, `{number}`) / padding / `reset_yearly`; `number_sequence_counters` holds the counter per period (the year if `reset_yearly`, else 0), so back-dated documents use their own year's counter.
 - Take a number **inside the transaction that saves the document**:
   `$no = app(NumberSequenceService::class)->next(SequenceSeries::ReceiptVoucher, $receiptDate);`
   The counter row is locked (`SELECT ... FOR UPDATE`) until commit. If the save fails the number is released (no gap); a voided document keeps its number.

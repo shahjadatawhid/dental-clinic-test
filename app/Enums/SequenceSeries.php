@@ -20,7 +20,9 @@ enum SequenceSeries: string
     public function defaults(): array
     {
         return match ($this) {
-            self::Patient => ['prefix' => 'FD', 'format' => '{prefix}-{number}', 'padding' => 6, 'reset_yearly' => false],
+            // Clinic's own style (Q1, confirmed 2026-11-22): FD-MM-YY-NNNNNN, MM-YY = registration
+            // month/year, counter never restarts. Old 4-digit IDs (FD-01-23-0208) stay as legacy_code.
+            self::Patient => ['prefix' => 'FD', 'format' => '{prefix}-{mm}-{yy}-{number}', 'padding' => 6, 'reset_yearly' => false],
             self::Invoice => ['prefix' => 'INV', 'format' => '{prefix}-{year}-{number}', 'padding' => 6, 'reset_yearly' => false],
             self::ReceiptVoucher => ['prefix' => 'RV', 'format' => '{prefix}-{year}-{number}', 'padding' => 6, 'reset_yearly' => false],
             self::PaymentVoucher => ['prefix' => 'PV', 'format' => '{prefix}-{year}-{number}', 'padding' => 6, 'reset_yearly' => false],

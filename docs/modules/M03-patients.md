@@ -6,7 +6,7 @@
 Register, find, and maintain patient records; the patient profile is the hub that links to everything else.
 
 ## Features
-- Register patient → auto `patient_code` (FD-000001); optional `legacy_code`.
+- Register patient → auto `patient_code` (`FD-MM-YY-NNNNNN`, e.g. FD-11-26-000001); optional `legacy_code` for old IDs like FD-01-23-0208.
 - Fast search: name, phone, patient code, legacy code (one search box; also in top bar).
 - Duplicate warning on register: same phone, or similar name + same DOB/age.
 - Edit demographics; deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).

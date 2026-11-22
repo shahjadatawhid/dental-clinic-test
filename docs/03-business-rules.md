@@ -7,7 +7,7 @@ Status legend: ✅ agreed (from plan / owner explanation) · 🟡 proposed defau
 ## 1. Patient IDs
 - ✅ Every patient has an internal ID (`patients.id`) that never changes.
 - ✅ Existing IDs like `FD-01-23-0208` are kept as `legacy_code`, searchable.
-- 🟡 New visible ID: `FD-000001` (continuous sequence) stored in `patient_code`.
+- ✅ New visible ID in the clinic's own style `FD-MM-YY-NNNNNN` (e.g. `FD-11-26-000001`): MM-YY = registration month/year, 6-digit counter that never restarts. Stored in `patient_code`. (Q1, confirmed by clinic 2026-11-22)
 - ✅ IDs are never reused, even after merge or deactivation.
 - ✅ Possible duplicates (same phone, similar name + DOB) are warned about at registration; merge is a manager action with audit.
 
@@ -73,7 +73,7 @@ Status legend: ✅ agreed (from plan / owner explanation) · 🟡 proposed defau
 
 | # | Question | Blocks |
 |---|----------|--------|
-| Q1 | Should new patient IDs continue the old `FD-MM-YY-NNNN` pattern or switch to `FD-000001`? | M03 |
+| ~~Q1~~ | ✅ Answered 2026-11-22: keep the old style as `FD-MM-YY-NNNNNN`, counter never restarts | M03 |
 | Q2 | RV/PV prefix format and yearly reset? | M07, M08 |
 | Q3 | Discount limit before manager approval? Who approves write-offs? | M07 |
 | Q4 | Which revenue counts for doctor settlement (which procedures, consultation fee?) | M10 |
