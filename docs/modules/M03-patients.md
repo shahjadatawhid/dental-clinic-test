@@ -8,7 +8,7 @@ Register, find, and maintain patient records; the patient profile is the hub tha
 ## Features
 - Register patient → auto `patient_code` (`FD-MM-YY-NNNNNN`, e.g. FD-11-26-000001); optional `legacy_code` for old IDs like FD-01-23-0208.
 - Fast search: name, phone, patient code, legacy code (one search box; also in top bar).
-- Phone must be unique per patient (blocked, message names the owner). Similar name + same DOB/age → warning only (`PossibleDuplicates`).
+- One phone can belong to several patients (family); each still gets their own code. Registration shows possible duplicates (`PossibleDuplicates::check`): same phone + same name, similar name + age, family on the number. Never blocks.
 - Edit demographics; deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).
 - Patient profile page with tabs: Overview · Timeline · Appointments · Visits · Dental chart · Prescriptions · Billing · Lab · Files.
 - Alerts banner (allergies, conditions) on profile and visit screens, each with date + who recorded + source. *(Phase 2)*
@@ -24,6 +24,7 @@ Patient search/list · Register/edit form · Patient profile (tabbed) · Merge s
 
 ## Acceptance criteria
 - Searching "0171" or partial name returns matches within 1s on 20k fictional patients.
-- Registering a patient with an existing phone is refused with the owner's code and name; a similar name + age shows a warning but allows continue.
-- Merge (later task) must leave the survivor with a phone; the merged record keeps its own phone, so that number stays taken.
+- Registering a child on a parent's phone lists the family on that number and allows continue; the child gets their own code and own history.
+- Same phone + same name is shown first as "probably the same person".
+- Searching by phone shows every patient on that number; the profile header always shows code + name + age + gender so staff confirm the right person.
 - Merging moves appointments/visits/invoices to the survivor and logs it.

@@ -27,7 +27,7 @@ class PatientFactory extends Factory
             'date_of_birth' => $knowsBirthday ? fake()->dateTimeBetween('-80 years', '-3 years') : null,
             'age_years' => $knowsBirthday ? null : fake()->numberBetween(5, 75),
             'age_recorded_on' => $knowsBirthday ? null : $registered,
-            'phone' => fake()->unique()->numerify(fake()->randomElement(['013', '015', '016', '017', '018', '019']).'########'),
+            'phone' => fake_bd()->phone(),
             'address' => fake_bd()->address(),
             'occupation' => fake()->optional(0.6)->randomElement(['Student', 'Teacher', 'Business', 'Service holder', 'Housewife', 'Doctor', 'Engineer', 'Retired']),
             'preferred_language' => fake()->randomElement(['bn', 'bn', 'bn', 'en']),

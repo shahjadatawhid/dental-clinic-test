@@ -9,8 +9,8 @@ Status legend: ✅ agreed (from plan / owner explanation) · 🟡 proposed defau
 - ✅ Existing IDs like `FD-01-23-0208` are kept as `legacy_code`, searchable.
 - ✅ New visible ID in the clinic's own style `FD-MM-YY-NNNNNN` (e.g. `FD-11-26-000001`): MM-YY = registration month/year, 6-digit counter that never restarts. Stored in `patient_code`. (Q1, confirmed by clinic 2026-11-22)
 - ✅ IDs are never reused, even after merge or deactivation.
-- ✅ Every patient has their own mobile number: a `phone` already on another patient (including inactive/merged records) is refused, and the message names that patient. Phone may be left blank (e.g. a small child); `alt_phone` may be a family member's number and is not unique. (clinic decision 2026-11-22)
-- ✅ Same name (ignoring case, dots, word order, Md./Mst.) + similar age (±1 year, or age unknown) is only a warning at registration; merge is a manager action with audit.
+- ✅ One phone may be shared by several patients (a family; children rarely have their own number). Every person is still a separate patient with their own `patient_code`; prescriptions, reports, visits and bills always link to `patient_id`, never to a phone. (clinic decision 2026-11-22)
+- ✅ Registration shows possible duplicates without blocking: same phone + same name → "probably the same person"; same name (ignoring case, dots, word order, Md./Mst.) + similar age (±1 year, or age unknown) → warning; same phone only → "family on this number" list. Merge is a manager action with audit.
 
 ## 2. Vouchers (V. NO)
 - ✅ Old `V. NO` = voucher number used for both money received and money paid out.

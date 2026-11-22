@@ -3,79 +3,74 @@
 use App\Actions\Patients\PossibleDuplicates;
 use App\Actions\Patients\RegisterPatient;
 use App\Models\Patient;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
-use Illuminate\Validation\ValidationException;
 
 beforeEach(fn () => Carbon::setTestNow('2026-11-22 10:00'));
 afterEach(fn () => Carbon::setTestNow());
 
-function registrationError(array $input): ?string
+/** @return list<array{int, string}> [patient id, match] pairs */
+function matchesFor(array $input): array
 {
-    try {
-        app(RegisterPatient::class)->handle($input);
-    } catch (ValidationException $e) {
-        return $e->errors()['phone'][0] ?? null;
-    }
-
-    return null;
+    return PossibleDuplicates::check($input)->map(fn ($m) => [$m['patient']->id, $m['match']])->all();
 }
 
-describe('phone', function () {
-    it('refuses a phone that already belongs to another patient, naming them', function () {
-        Patient::factory()->create(['patient_code' => 'FD-10-26-000007', 'full_name' => 'Nusrat Jahan', 'phone' => '01711000000']);
+describe('shared phone', function () {
+    it('lets a family share one number, each patient getting their own code', function () {
+        $register = app(RegisterPatient::class);
 
-        expect(registrationError(['full_name' => 'Rakib Hossain', 'phone' => '+880 1711-000000']))
-            ->toBe('This phone is already registered to FD-10-26-000007 (Nusrat Jahan). Each patient needs their own number.')
-            ->and(Patient::count())->toBe(1);
+        $mother = $register->handle(['full_name' => 'Nusrat Jahan', 'phone' => '01711000000']);
+        $son = $register->handle(['full_name' => 'Arian Hossain', 'age_years' => 6, 'phone' => '+880 1711-000000']);
+        $daughter = $register->handle(['full_name' => 'Anika Hossain', 'age_years' => 3, 'phone' => '01711000000']);
+
+        expect([$mother->patient_code, $son->patient_code, $daughter->patient_code])
+            ->toBe(['FD-11-26-000001', 'FD-11-26-000002', 'FD-11-26-000003'])
+            ->and(Patient::where('phone', '01711000000')->count())->toBe(3);
     });
 
-    it('also counts inactive and merged records as owners', function () {
-        $kept = Patient::factory()->create();
-        Patient::factory()->inactive()->create(['phone' => '01711000001']);
-        Patient::factory()->create(['phone' => '01711000002'])->forceFill(['merged_into_id' => $kept->id])->save();
+    it('lists the family already on the number (phone or second phone)', function () {
+        $mother = Patient::factory()->create(['full_name' => 'Nusrat Jahan', 'phone' => '01711000000']);
+        $father = Patient::factory()->create(['full_name' => 'Kamal Hossain', 'phone' => '01811000000', 'alt_phone' => '01711000000']);
+        Patient::factory()->create(['phone' => '01911000000']);
 
-        expect(registrationError(['full_name' => 'A B', 'phone' => '01711000001']))->not->toBeNull()
-            ->and(registrationError(['full_name' => 'A B', 'phone' => '01711000002']))->not->toBeNull();
+        expect(matchesFor(['full_name' => 'Arian Hossain', 'age_years' => 6, 'phone' => '+880 1711-000000']))->toBe([
+            [$mother->id, PossibleDuplicates::SAME_PHONE],
+            [$father->id, PossibleDuplicates::SAME_PHONE],
+        ]);
     });
 
-    it('allows many patients without a phone', function () {
-        Patient::factory()->create(['phone' => null]);
+    it('flags same phone + same name as probably the same person, first', function () {
+        $mother = Patient::factory()->create(['full_name' => 'Nusrat Jahan', 'phone' => '01711000000']);
+        $existing = Patient::factory()->create(['full_name' => 'Md. Arian Hossain', 'phone' => '01711000000']);
 
-        expect(registrationError(['full_name' => 'Small Child']))->toBeNull()
-            ->and(registrationError(['full_name' => 'Another Child', 'phone' => '  ']))->toBeNull()
-            ->and(Patient::whereNull('phone')->count())->toBe(3);
+        expect(matchesFor(['full_name' => 'arian hossain', 'phone' => '01711000000']))->toBe([
+            [$existing->id, PossibleDuplicates::SAME_PERSON],
+            [$mother->id, PossibleDuplicates::SAME_PHONE],
+        ]);
     });
 
-    it("allows someone else's number as the second phone (e.g. a parent's)", function () {
-        Patient::factory()->create(['phone' => '01711000000']);
+    it('lists a same-name patient on another phone between the two', function () {
+        $sibling = Patient::factory()->create(['full_name' => 'Anika Hossain', 'phone' => '01711000000']);
+        $namesake = Patient::factory()->create(['full_name' => 'Arian Hossain', 'phone' => '01811000000', 'date_of_birth' => null, 'age_years' => null]);
 
-        expect(registrationError(['full_name' => 'Child', 'phone' => '01811000000', 'alt_phone' => '01711000000']))->toBeNull();
+        expect(matchesFor(['full_name' => 'Arian Hossain', 'phone' => '01711000000']))->toBe([
+            [$namesake->id, PossibleDuplicates::SAME_NAME],
+            [$sibling->id, PossibleDuplicates::SAME_PHONE],
+        ]);
     });
 
-    it('ignores the patient being edited', function () {
-        $patient = Patient::factory()->create(['phone' => '01711000000']);
+    it('leaves out merged records and the patient being edited, keeps inactive ones', function () {
+        $kept = Patient::factory()->create(['phone' => '01711000000']);
+        $inactive = Patient::factory()->inactive()->create(['phone' => '01711000000']);
+        Patient::factory()->create(['phone' => '01711000000'])->forceFill(['merged_into_id' => $kept->id])->save();
 
-        expect(PossibleDuplicates::phoneOwner('01711000000', $patient->id))->toBeNull()
-            ->and(PossibleDuplicates::phoneOwner('01711000000')?->is($patient))->toBeTrue();
+        expect(PossibleDuplicates::samePhone(['01711000000'], $kept->id)->pluck('id')->all())->toBe([$inactive->id]);
     });
 
-    it('is enforced by the database too', function () {
-        Patient::factory()->create(['phone' => '01711000000']);
+    it('finds nothing for a blank or half-typed phone', function () {
+        Patient::factory()->create(['full_name' => 'Nusrat Jahan', 'phone' => '01711000000']);
 
-        Patient::factory()->create(['phone' => '01711000000']);
-    })->throws(UniqueConstraintViolationException::class);
-
-    it('turns a same-moment clash into a normal phone error', function () {
-        // Another desk saves the same number between our check and our insert.
-        Patient::creating(function (Patient $p) {
-            if ($p->full_name === 'Second Desk') {
-                Patient::withoutEvents(fn () => Patient::factory()->create(['phone' => $p->phone]));
-            }
-        });
-
-        expect(registrationError(['full_name' => 'Second Desk', 'phone' => '01711000000']))
-            ->toStartWith('This phone is already registered to');
+        expect(matchesFor(['full_name' => 'X Y', 'phone' => '']))->toBe([])
+            ->and(matchesFor(['full_name' => 'X Y', 'phone' => '0171']))->toBe([]);
     });
 });
 

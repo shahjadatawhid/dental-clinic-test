@@ -3,7 +3,6 @@
 namespace App\Actions\Patients;
 
 use App\Support\Phone;
-use Closure;
 use Illuminate\Validation\Rule;
 
 /**
@@ -12,17 +11,19 @@ use Illuminate\Validation\Rule;
 final class PatientRules
 {
     /**
-     * @param  int|null  $ignoreId  the patient being edited (their own phone is fine)
+     * A phone may be shared by several patients (a family on one number); each patient
+     * is still a separate record with their own patient_code.
+     *
      * @return array<string, list<mixed>>
      */
-    public static function rules(?int $ignoreId = null): array
+    public static function rules(): array
     {
         return [
             'full_name' => ['required', 'string', 'min:2', 'max:255'],
             'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
             'date_of_birth' => ['nullable', 'date', 'before_or_equal:today', 'after:1900-01-01'],
             'age_years' => ['nullable', 'integer', 'min:0', 'max:120'],
-            'phone' => ['bail', 'nullable', 'regex:'.Phone::BD_MOBILE, self::phoneNotTaken($ignoreId)],
+            'phone' => ['nullable', 'regex:'.Phone::BD_MOBILE],
             'alt_phone' => ['nullable', 'regex:'.Phone::BD_MOBILE, 'different:phone'],
             'email' => ['nullable', 'email', 'max:255'],
             'address' => ['nullable', 'string', 'max:500'],
@@ -34,24 +35,6 @@ final class PatientRules
             'notes' => ['nullable', 'string', 'max:2000'],
             'legacy_code' => ['nullable', 'string', 'max:30'],
         ];
-    }
-
-    /**
-     * Clinic rule: every patient has their own mobile number (family members can't share
-     * one). The message names the owner so reception can open the existing record.
-     */
-    public static function phoneNotTaken(?int $ignoreId = null): Closure
-    {
-        return function (string $attribute, mixed $value, Closure $fail) use ($ignoreId) {
-            $owner = PossibleDuplicates::phoneOwner((string) $value, $ignoreId);
-
-            if ($owner) {
-                $fail(__('This phone is already registered to :code (:name). Each patient needs their own number.', [
-                    'code' => $owner->patient_code,
-                    'name' => $owner->full_name,
-                ]));
-            }
-        };
     }
 
     /** @return array<string, string> */

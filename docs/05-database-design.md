@@ -39,7 +39,7 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `patients` | patient_code UQ (FD-MM-YY-NNNNNN), legacy_code IDX nullable (not unique), registered_on, full_name IDX, gender, date_of_birth nullable, age_years + age_recorded_on (if DOB unknown), phone UQ nullable (one number per patient), alt_phone IDX, email, address, occupation, preferred_language (bn/en), emergency_contact_name/phone, referred_by, notes, is_active, merged_into_id FK nullable — never deleted |
+| `patients` | patient_code UQ (FD-MM-YY-NNNNNN), legacy_code IDX nullable (not unique), registered_on, full_name IDX, gender, date_of_birth nullable, age_years + age_recorded_on (if DOB unknown), phone IDX (may be shared by a family), alt_phone IDX, email, address, occupation, preferred_language (bn/en), emergency_contact_name/phone, referred_by, notes, is_active, merged_into_id FK nullable — never deleted |
 | `patient_consents` | patient_id, type (treatment/data/sharing), given_at, given_by_name, document media, revoked_at |
 | `patient_alerts` | patient_id, type (allergy/condition/medication/other), title, severity, notes, source, recorded_by, recorded_at, resolved_at |
 | `patient_medical_history` | patient_id, condition, details, since, recorded_by, recorded_at |

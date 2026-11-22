@@ -5,18 +5,16 @@ namespace App\Actions\Patients;
 use App\Enums\SequenceSeries;
 use App\Models\Patient;
 use App\Services\NumberSequenceService;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 /**
- * Registers a new patient and gives them the next patient code (FD-MM-YY-NNNNNN).
+ * Registers a new patient and gives them their own patient code (FD-MM-YY-NNNNNN).
  *
- * A phone that already belongs to another patient is refused (clinic rule: one number
- * per patient). A similar name + age is only a warning, shown by the screen before
- * calling this (PossibleDuplicates::byNameAndAge); this action does not block on it.
+ * Every registration is a separate person with a separate record, even when several
+ * patients share one phone (a family). Possible duplicates are shown by the screen
+ * before calling this (PossibleDuplicates::check); this action never blocks on them.
  */
 class RegisterPatient
 {
@@ -44,25 +42,6 @@ class RegisterPatient
         }
         $ageRecordedOn = empty($data['date_of_birth']) && isset($data['age_years']) ? $registeredOn : null;
 
-        try {
-            return $this->save($data, $registeredOn, $ageRecordedOn);
-        } catch (UniqueConstraintViolationException $e) {
-            // Someone saved the same phone a moment ago, after our check passed.
-            if (! str_contains($e->getMessage(), 'patients_phone_unique')) {
-                throw $e;
-            }
-            $owner = PossibleDuplicates::phoneOwner($data['phone'] ?? null);
-
-            throw ValidationException::withMessages(['phone' => __(
-                'This phone is already registered to :code (:name). Each patient needs their own number.',
-                ['code' => $owner->patient_code ?? '?', 'name' => $owner->full_name ?? '?'],
-            )]);
-        }
-    }
-
-    /** @param  array<string, mixed>  $data */
-    private function save(array $data, Carbon $registeredOn, ?Carbon $ageRecordedOn): Patient
-    {
         return DB::transaction(function () use ($data, $registeredOn, $ageRecordedOn) {
             $patient = new Patient;
             $patient->fill(collect($data)->except('registered_on')->all());
