@@ -8,6 +8,9 @@ Register, find, and maintain patient records; the patient profile is the hub tha
 ## Features
 - Register patient → auto `patient_code` (`FD-MM-YY-NNNNNN`, e.g. FD-11-26-000001); optional `legacy_code` for old IDs like FD-01-23-0208.
 - Fast search: name, phone, patient code, legacy code (one search box; also in top bar).
+  - Name: every typed word must appear, any order. Phone: any format (`+880 1711-000000`, `0171`), matches phone or second phone, lists the whole family on a number. Code: full or part of the new or old code; exact code match first.
+  - Active patients by default; inactive / all (incl. merged) on request.
+  - `patients.view_minimal` (lab coordinator) sees and searches only name + code, never phone.
 - One phone can belong to several patients (family); each still gets their own code. Registration shows possible duplicates (`PossibleDuplicates::check`): same phone + same name, similar name + age, family on the number. Never blocks.
 - Edit demographics; deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).
 - Patient profile page with tabs: Overview · Timeline · Appointments · Visits · Dental chart · Prescriptions · Billing · Lab · Files.

@@ -11,6 +11,10 @@
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
+            @canany(['patients.view', 'patients.view_minimal'])
+                <livewire:patients.quick-search />
+            @endcanany
+
             {{-- Menu items and their permissions live in App\Navigation\Menu --}}
             <flux:navlist variant="outline">
                 @foreach (\App\Navigation\Menu::for(auth()->user()) as $section)

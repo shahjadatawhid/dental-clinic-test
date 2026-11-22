@@ -17,6 +17,11 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+// M03 Patients
+Route::middleware(['auth', 'verified'])->group(function () {
+    Volt::route('patients', 'patients.index')->middleware('permission:patients.view|patients.view_minimal')->name('patients.index');
+});
+
 // M02 Staff & schedules
 Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('staff', 'staff.index')->middleware('permission:staff.view')->name('staff.index');
