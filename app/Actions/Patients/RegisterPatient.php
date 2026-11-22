@@ -5,15 +5,18 @@ namespace App\Actions\Patients;
 use App\Enums\SequenceSeries;
 use App\Models\Patient;
 use App\Services\NumberSequenceService;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Registers a new patient and gives them the next patient code (FD-MM-YY-NNNNNN).
  *
- * Duplicate warnings (same phone / similar name) are shown by the screen before calling
- * this (M03-03); this action itself never blocks a registration as a duplicate.
+ * A phone that already belongs to another patient is refused (clinic rule: one number
+ * per patient). A similar name + age is only a warning, shown by the screen before
+ * calling this (PossibleDuplicates::byNameAndAge); this action does not block on it.
  */
 class RegisterPatient
 {
@@ -41,6 +44,25 @@ class RegisterPatient
         }
         $ageRecordedOn = empty($data['date_of_birth']) && isset($data['age_years']) ? $registeredOn : null;
 
+        try {
+            return $this->save($data, $registeredOn, $ageRecordedOn);
+        } catch (UniqueConstraintViolationException $e) {
+            // Someone saved the same phone a moment ago, after our check passed.
+            if (! str_contains($e->getMessage(), 'patients_phone_unique')) {
+                throw $e;
+            }
+            $owner = PossibleDuplicates::phoneOwner($data['phone'] ?? null);
+
+            throw ValidationException::withMessages(['phone' => __(
+                'This phone is already registered to :code (:name). Each patient needs their own number.',
+                ['code' => $owner->patient_code ?? '?', 'name' => $owner->full_name ?? '?'],
+            )]);
+        }
+    }
+
+    /** @param  array<string, mixed>  $data */
+    private function save(array $data, Carbon $registeredOn, ?Carbon $ageRecordedOn): Patient
+    {
         return DB::transaction(function () use ($data, $registeredOn, $ageRecordedOn) {
             $patient = new Patient;
             $patient->fill(collect($data)->except('registered_on')->all());

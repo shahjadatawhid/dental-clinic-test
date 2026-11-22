@@ -55,7 +55,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 ### M03 Patients (core)
 - [x] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_ — + registered_on, age_years/age_recorded_on, merged_into_id; patient audit log needs patients.view
 - [x] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_ — `RegisterPatient` + shared `PatientRules` (clean-up, validation)
-- [ ] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_
+- [x] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_ — phone unique per patient (validation + DB unique index, race-safe); `PossibleDuplicates::byNameAndAge` warning (shown on the form in M03-05)
 - [ ] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_
 - [ ] **M03-05** (M) Register / edit patient form · _M03-02_
 - [ ] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_
