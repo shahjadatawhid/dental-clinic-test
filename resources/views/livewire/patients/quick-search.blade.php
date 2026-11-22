@@ -51,7 +51,7 @@ new class extends Component {
         <div x-show="open" x-cloak
             class="absolute inset-x-0 top-full z-50 mt-1 w-72 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
             @forelse ($results as $patient)
-                <a href="{{ route('patients.index', ['search' => $patient->patient_code]) }}" wire:navigate
+                <a href="{{ $full ? route('patients.show', $patient) : route('patients.index', ['search' => $patient->patient_code]) }}" wire:navigate
                     class="block px-3 py-2 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700">
                     <div class="font-medium">{{ $patient->summary() }}</div>
                     <div class="text-xs text-zinc-500">

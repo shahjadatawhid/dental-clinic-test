@@ -28,7 +28,7 @@ describe('register', function () {
             ->set('form.guardian_relation', 'mother')
             ->call('save')
             ->assertHasNoErrors()
-            ->assertRedirect(route('patients.index', ['search' => 'FD-11-26-000001']));
+            ->assertRedirect(route('patients.show', Patient::sole()));
 
         $patient = Patient::sole();
         expect($patient->patient_code)->toBe('FD-11-26-000001')
@@ -130,7 +130,7 @@ describe('edit', function () {
             ->set('form.full_name', 'Rakib Hossain')
             ->call('save')
             ->assertHasNoErrors()
-            ->assertRedirect(route('patients.index', ['search' => 'FD-10-26-000005']));
+            ->assertRedirect(route('patients.show', $patient));
 
         expect($patient->fresh()->full_name)->toBe('Rakib Hossain')
             ->and($patient->fresh()->patient_code)->toBe('FD-10-26-000005')

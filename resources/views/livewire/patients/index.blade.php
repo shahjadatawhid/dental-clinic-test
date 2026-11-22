@@ -94,7 +94,13 @@ new #[Title('Patients')] class extends Component {
                             <div class="font-mono text-xs text-zinc-500">{{ __('old') }}: {{ $patient->legacy_code }}</div>
                         @endif
                     </flux:table.cell>
-                    <flux:table.cell variant="strong">{{ $patient->summary() }}</flux:table.cell>
+                    <flux:table.cell variant="strong">
+                        @if ($full && ! $patient->merged_into_id)
+                            <flux:link :href="route('patients.show', $patient)" wire:navigate variant="ghost">{{ $patient->summary() }}</flux:link>
+                        @else
+                            {{ $patient->summary() }}
+                        @endif
+                    </flux:table.cell>
                     @if ($full)
                         <flux:table.cell>
                             <div>{{ $patient->phone ?? '—' }}</div>

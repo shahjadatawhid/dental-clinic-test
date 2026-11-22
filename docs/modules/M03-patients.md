@@ -15,6 +15,7 @@ Register, find, and maintain patient records; the patient profile is the hub tha
 - Register / edit form: duplicate panel updates while typing (probably the same person · same name and age · others on this number); "probably the same person" needs an explicit tick before registering.
 - Parent/guardian name + relation, highlighted when the patient is under 18.
 - Edit demographics (code and registration date never change; age typed earlier keeps growing unless corrected); deactivate; merge duplicates (manager, audited; merged record points to survivor; codes never reused).
+- Patient profile (`patients.view`; lab staff with only `patients.view_minimal` cannot open it): header always shows code, name, gender, age, old ID, phone, guardian. Each tab is visible only with its module's permission (Appointments: appointments.view/_own, Visits: visits.view, Billing: invoices.view/_own). Opening a merged record goes to the patient it was merged into.
 - Patient profile page with tabs: Overview · Timeline · Appointments · Visits · Dental chart · Prescriptions · Billing · Lab · Files.
 - Alerts banner (allergies, conditions) on profile and visit screens, each with date + who recorded + source. *(Phase 2)*
 - Medical history and consent records. *(Phase 2)*

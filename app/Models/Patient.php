@@ -116,6 +116,18 @@ class Patient extends Model
         return collect([$this->full_name, $gender, $age !== null ? "{$age}y" : null])->filter()->implode(' · ');
     }
 
+    /** "Nusrat Jahan (Mother)", or null when no guardian is recorded. */
+    public function guardianLabel(): ?string
+    {
+        if ($this->guardian_name === null) {
+            return null;
+        }
+
+        return $this->guardian_relation
+            ? $this->guardian_name.' ('.__(ucfirst($this->guardian_relation)).')'
+            : $this->guardian_name;
+    }
+
     /**
      * Records that can be used: active and not merged away.
      *

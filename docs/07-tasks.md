@@ -56,9 +56,9 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_ — + registered_on, age_years/age_recorded_on, merged_into_id; patient audit log needs patients.view
 - [x] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_ — `RegisterPatient` + shared `PatientRules` (clean-up, validation)
 - [x] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_ — `PossibleDuplicates::check`: same phone + same name / similar name + age / family on the number; never blocks (families share phones); shown on the form in M03-05
-- [x] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_ — `/patients` + `SearchPatients`; sidebar "Find patient" box (press `/`); lab staff (`patients.view_minimal`) see/search name+code only; rows link to the profile once M03-06 exists
+- [x] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_ — `/patients` + `SearchPatients`; sidebar "Find patient" box (press `/`); lab staff (`patients.view_minimal`) see/search name+code only; rows link to the profile
 - [x] **M03-05** (M) Register / edit patient form · _M03-02_ — `/patients/register`, `/patients/{id}/edit`; `UpdatePatient`; guardian name + relation (asked for under 18); live duplicate panel; "probably the same person" needs a tick to continue
-- [ ] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_
+- [x] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_ — `/patients/{id}`; header code/name/age/gender/old ID/phone/guardian; overview + "others on this number"; tabs shown by permission, placeholders until M04/M05/M07; merged record opens the survivor; search, quick search, form and duplicate panel link here
 - [ ] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_
 
 ### M04 Appointments & queue

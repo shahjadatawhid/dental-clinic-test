@@ -97,7 +97,7 @@ new class extends Component {
             ? __(':name (:code) has been updated.', ['name' => $saved->full_name, 'code' => $saved->patient_code])
             : __(':name has been registered as :code.', ['name' => $saved->full_name, 'code' => $saved->patient_code]));
 
-        $this->redirectRoute('patients.index', ['search' => $saved->patient_code], navigate: true);
+        $this->redirectRoute('patients.show', $saved, navigate: true);
     }
 
     /** @return \Illuminate\Support\Collection<int, array{patient: Patient, match: string}> */
@@ -236,7 +236,7 @@ new class extends Component {
 
             <div class="flex gap-3">
                 <flux:button type="submit" variant="primary">{{ $patient ? __('Save changes') : __('Register patient') }}</flux:button>
-                <flux:button variant="ghost" :href="route('patients.index')" wire:navigate>{{ __('Cancel') }}</flux:button>
+                <flux:button variant="ghost" :href="$patient ? route('patients.show', $patient) : route('patients.index')" wire:navigate>{{ __('Cancel') }}</flux:button>
             </div>
         </form>
 
@@ -256,7 +256,7 @@ new class extends Component {
                         <flux:card class="flex flex-col gap-2 p-4">
                             <flux:badge size="sm" :color="$color" class="self-start">{{ __($heading) }}</flux:badge>
                             @foreach ($group as $m)
-                                <a href="{{ route('patients.index', ['search' => $m['patient']->patient_code, 'status' => 'all']) }}" target="_blank"
+                                <a href="{{ route('patients.show', $m['patient']) }}" target="_blank"
                                     class="rounded-md px-2 py-1.5 text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700">
                                     <div class="font-medium">{{ $m['patient']->summary() }}</div>
                                     <div class="text-xs text-zinc-500">

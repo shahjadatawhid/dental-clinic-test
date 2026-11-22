@@ -21,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Volt::route('patients', 'patients.index')->middleware('permission:patients.view|patients.view_minimal')->name('patients.index');
     Volt::route('patients/register', 'patients.form')->middleware('permission:patients.create')->name('patients.create');
+    Volt::route('patients/{patient}', 'patients.show')->middleware('permission:patients.view')->whereNumber('patient')->name('patients.show');
     Volt::route('patients/{patient}/edit', 'patients.form')->middleware('permission:patients.update')->name('patients.edit');
 });
 
