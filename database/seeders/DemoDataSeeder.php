@@ -25,7 +25,7 @@ class DemoDataSeeder extends Seeder
         $this->refuseInProduction();
 
         $this->call([
-            // StaffSeeder::class,       // M02-06
+            StaffSeeder::class,          // M02-06
             // PatientSeeder::class,     // M03-07
         ]);
     }

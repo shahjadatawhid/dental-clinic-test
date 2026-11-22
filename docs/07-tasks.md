@@ -50,7 +50,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M02-03** (S) Rooms & chairs CRUD · _M02-01_ — `/rooms` single page, inline edit, deactivate only
 - [x] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_ — versioned `doctor_schedules` + blocks; `/schedules`, `/doctors/{id}/hours`; `$doctor->hoursOn($date)`
 - [x] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_ — `doctor_time_off`, `clinic_holidays`, `DoctorAvailability::workingPeriods()`; `/holidays`; leave UI on hours page
-- [ ] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_
+- [x] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_ — `StaffSeeder` (4 doctors, 3 staff, 3 rooms/4 chairs, routines, demo leave, fixed BD holidays)
 
 ### M03 Patients (core)
 - [ ] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_
