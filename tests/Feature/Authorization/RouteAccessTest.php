@@ -51,7 +51,7 @@ function urlFor(Route $route): string
 
     $params = [];
     foreach ($route->parameterNames() as $name) {
-        expect($examples)->toHaveKey($name, "Add an example value for route parameter {{$name}} in RouteAccessTest");
+        expect($examples)->toHaveKey($name, message: "Add an example value for route parameter {{$name}} in RouteAccessTest");
         $params[$name] = $examples[$name]();
     }
 

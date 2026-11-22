@@ -41,8 +41,8 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M01-11** (M) `number_sequences` + `NumberSequenceService` with row lock 🧪 concurrency · _M01-01_ — `NumberSequenceService`, `SequenceSeries` enum, `app:sync-sequences` (daily), multi-process test in `tests/Concurrency`
 - [~] **M01-12** (S) Clinic profile screen (name, address, logo) · _M01-09_ — name/address/phone/email/reg no done as settings; logo upload pending
 - [x] **M01-13** (M) Audit log viewer with filters · _M01-10_ — `/admin/audit`; clinical logs hidden by `AuditLogAccess`; "History" link on users
-- [ ] **M01-14** (S) Role-based sidebar menu + 403 page; test forbidden URL access 🧪 · _M01-05_
-- [ ] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_
+- [x] **M01-14** (S) Role-based sidebar menu + 403 page; test forbidden URL access 🧪 · _M01-05_ — `app/Navigation/Menu.php`; 403/404/419 pages; RouteAccessTest guards every route
+- [x] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_ — `fake_bd()` (BD names/phones/addresses), DevUsersSeeder, DemoDataSeeder hook, production guard
 
 ### M02 Staff & schedules
 - [ ] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — use `Auditable` + `HasUserstamps`

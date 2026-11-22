@@ -68,6 +68,7 @@ docs/
 - **Enums:** PHP backed enums for statuses; never magic strings.
 - **Soft deletes** only for master data (patients, medicines, procedures). Financial records are never deleted — they get `status = void` + reason.
 - **Authorization:** every Livewire action calls `$this->authorize()` / policies. Never rely on hiding buttons.
+- **New screen checklist:** (1) route with `->middleware('permission:...')`, (2) `Gate::authorize()` in every action that changes data, (3) menu entry in [app/Navigation/Menu.php](../app/Navigation/Menu.php) with the **same** permission. [tests/Feature/Authorization/RouteAccessTest.php](../tests/Feature/Authorization/RouteAccessTest.php) fails if a signed-in route has no permission middleware (unless listed as personal), if a user without the permission doesn't get 403, or if a menu item and its route disagree.
 - **Audit:** every model with clinical or financial meaning uses:
   - `App\Models\Concerns\Auditable` — logs create/update/delete with old → new values and the acting user (`activity_log` table). Override `auditExcept()` to skip noisy columns; `$hidden` columns are never logged.
   - `App\Models\Concerns\HasUserstamps` + `$table->userstamps();` in the migration — fills `created_by` / `updated_by`.
@@ -76,6 +77,7 @@ docs/
   - Never schedule `activitylog:clean` — the audit trail is part of the record.
   - Viewed at **Administration → Audit history** (`audit.view`). Audit entries copy changed data, so a new Auditable model with clinical or settlement data **must** be added to [app/Authorization/AuditLogAccess.php](../app/Authorization/AuditLogAccess.php) with the permission needed to see it; otherwise e.g. an accountant could read clinical notes through the audit log.
 - **Settings:** a clinic-configurable value is added to [app/Settings/Definitions.php](../app/Settings/Definitions.php) (key, group, type, default, label, rules) and read with `setting('group.key')`. It then appears on **Administration → Clinic settings** automatically. Only non-default values are stored; changes are audited. Unknown keys throw, so typos fail loudly.
+- **Fictional data:** factories use `fake_bd()->name('female')`, `->phone()`, `->address()` for Bangladeshi-looking made-up data. Each module adds a demo seeder to [DemoDataSeeder](../database/seeders/DemoDataSeeder.php) (idempotent, uses `GuardsAgainstProduction`). `DatabaseSeeder` only seeds reference data (roles, sequences) in production.
 - **i18n:** all UI text through `__()` so Bangla can be added later.
 - **Tests:** each Action has a feature test. Money and sequence logic must have tests before merge.
 
