@@ -2,6 +2,7 @@
 
 use App\Authorization\Permissions;
 use App\Enums\RoleName;
+use App\Models\Staff;
 use App\Models\User;
 use App\Navigation\Menu;
 use Illuminate\Routing\Route;
@@ -47,6 +48,7 @@ function urlFor(Route $route): string
         'role' => fn () => RoleName::Receptionist->value,
         'id' => fn () => 1,
         'hash' => fn () => 'x',
+        'staff' => fn () => Staff::factory()->create()->id,
     ];
 
     $params = [];

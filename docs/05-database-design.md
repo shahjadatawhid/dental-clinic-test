@@ -15,7 +15,7 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `users` | name, email UQ, phone, password, is_active, last_login_at, staff_id FK nullable |
+| `users` | name, email UQ, phone, password, is_active, deactivated_at, last_login_at (staff profile links back via `staff.user_id`) |
 | `roles`, `permissions`, `model_has_roles`, ... | from spatie/laravel-permission |
 | `settings` | key UQ, value json, effective_from date nullable, updated_by |
 | `activity_log` | from spatie/laravel-activitylog (who, what model, old/new values, reason) |
@@ -26,10 +26,10 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `staff` | full_name, type (doctor/staff), designation, phone, email, joined_on, is_active |
-| `doctors` | staff_id FK UQ, bmdc_reg_no, specialty, qualifications, signature_path, default_slot_minutes, color |
-| `rooms` | name, is_active |
-| `chairs` | room_id FK, name, is_active |
+| `staff` | user_id FK UQ nullable, full_name, type (doctor/staff), designation, gender, phone IDX, email, joined_on, left_on, is_active, notes — never deleted |
+| `doctors` | staff_id FK UQ, registration_no UQ nullable (BMDC), specialty, qualifications, signature_path, default_slot_minutes nullable (→ setting), calendar_color, is_bookable |
+| `rooms` | name UQ, notes, sort_order, is_active |
+| `chairs` | room_id FK, name (UQ per room), sort_order, is_active — usable only if its room is active |
 | `doctor_working_hours` | doctor_id FK, weekday (0–6), start_time, end_time, chair_id FK nullable, effective_from, effective_to |
 | `doctor_time_off` | doctor_id FK, starts_at, ends_at, type (leave/blocked/holiday), reason |
 | `clinic_holidays` | date UQ, name |

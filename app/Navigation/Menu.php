@@ -25,8 +25,15 @@ final class Menu
                 ],
             ],
 
-            // Clinic modules (M02–M13) add their sections here, e.g.
+            // Clinic modules (M03–M13) add their sections here, e.g.
             // ['heading' => 'Front desk', 'items' => [new MenuItem('Patients', 'user-group', 'patients.index', 'patients.*', ['patients.view'])]],
+
+            [
+                'heading' => 'Staff & schedules',
+                'items' => [
+                    new MenuItem('Staff', 'identification', 'staff.index', 'staff.*', ['staff.view']),
+                ],
+            ],
 
             [
                 'heading' => 'Administration',

@@ -7,6 +7,7 @@ use App\Models\Concerns\Auditable;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -80,6 +81,16 @@ class User extends Authenticatable // implements MustVerifyEmail
     public function scopeActive($query): void
     {
         $query->where('is_active', true);
+    }
+
+    /**
+     * The staff profile linked to this login, if any.
+     *
+     * @return HasOne<Staff, $this>
+     */
+    public function staff(): HasOne
+    {
+        return $this->hasOne(Staff::class);
     }
 
     /**

@@ -17,6 +17,13 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
 });
 
+// M02 Staff & schedules
+Route::middleware(['auth', 'verified'])->group(function () {
+    Volt::route('staff', 'staff.index')->middleware('permission:staff.view')->name('staff.index');
+    Volt::route('staff/create', 'staff.form')->middleware('permission:staff.manage')->name('staff.create');
+    Volt::route('staff/{staff}/edit', 'staff.form')->middleware('permission:staff.manage')->name('staff.edit');
+});
+
 // M01 Administration
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Volt::route('users', 'admin.users.index')->middleware('permission:users.view')->name('users.index');

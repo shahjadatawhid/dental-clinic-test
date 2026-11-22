@@ -45,8 +45,8 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_ — `fake_bd()` (BD names/phones/addresses), DevUsersSeeder, DemoDataSeeder hook, production guard
 
 ### M02 Staff & schedules
-- [ ] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — use `Auditable` + `HasUserstamps`
-- [ ] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_
+- [x] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — Staff, Doctor, Room, Chair + factories; Auditable + HasUserstamps
+- [x] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_ — `/staff`; SaveStaff action; private signature upload; phone normalised
 - [ ] **M02-03** (S) Rooms & chairs CRUD · _M02-01_
 - [ ] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_
 - [ ] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_
