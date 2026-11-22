@@ -53,7 +53,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_ — `StaffSeeder` (4 doctors, 3 staff, 3 rooms/4 chairs, routines, demo leave, fixed BD holidays)
 
 ### M03 Patients (core)
-- [ ] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_
+- [x] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_ — + registered_on, age_years/age_recorded_on, merged_into_id; patient audit log needs patients.view
 - [ ] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_
 - [ ] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_
 - [ ] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_

@@ -16,7 +16,8 @@ final class AuditLogAccess
 {
     /** @var array<string, string> log name (table) => permission needed to see it */
     public const RESTRICTED = [
-        // M03 clinical patient data
+        // M03 patient demographics (name, phone, address) and clinical patient data
+        'patients' => 'patients.view',
         'patient_alerts' => 'patients.view_clinical',
         'patient_medical_history' => 'patients.view_clinical',
         // M05 clinical
