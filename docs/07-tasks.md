@@ -49,7 +49,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_ — `/staff`; SaveStaff action; private signature upload; phone normalised
 - [x] **M02-03** (S) Rooms & chairs CRUD · _M02-01_ — `/rooms` single page, inline edit, deactivate only
 - [x] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_ — versioned `doctor_schedules` + blocks; `/schedules`, `/doctors/{id}/hours`; `$doctor->hoursOn($date)`
-- [ ] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_
+- [x] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_ — `doctor_time_off`, `clinic_holidays`, `DoctorAvailability::workingPeriods()`; `/holidays`; leave UI on hours page
 - [ ] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_
 
 ### M03 Patients (core)
@@ -64,7 +64,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 ### M04 Appointments & queue
 - [ ] **M04-01** (S) appointment_types + appointments migrations, `AppointmentStatus` enum with allowed transitions 🧪 · _M02-01, M03-01_
 - [ ] **M04-02** (S) MySQL overlap guard: indexes + `lockForUpdate()` on doctor/chair row inside booking transaction · _M04-01_
-- [ ] **M04-03** (L) `AvailabilityService` (hours − leave − holidays − bookings, by duration/chair) 🧪 · _M02-05, M04-01_
+- [ ] **M04-03** (L) `AvailabilityService` (hours − leave − holidays − bookings, by duration/chair) 🧪 · _M02-05, M04-01_ — build on `DoctorAvailability::workingPeriods()`; also add the "appointments affected by new leave/holiday" warning (M02 doc)
 - [ ] **M04-04** (M) `BookAppointment` / `RescheduleAppointment` / `CancelAppointment` actions 🧪 double-booking · _M04-03_
 - [ ] **M04-05** (L) Calendar view (day/week, by doctor/chair) · _M04-04_
 - [ ] **M04-06** (M) Booking modal: doctor → date → free slots → patient find/quick-register → confirm; alternative doctors when none free · _M04-04, M03-04_

@@ -34,6 +34,7 @@ final class Menu
                     new MenuItem('Staff', 'identification', 'staff.index', 'staff.*', ['staff.view']),
                     new MenuItem('Rooms & chairs', 'building-office', 'rooms.index', 'rooms.*', ['staff.view']),
                     new MenuItem('Doctor schedules', 'calendar-days', 'schedules.index', 'schedules.*', ['schedules.view']),
+                    new MenuItem('Clinic holidays', 'sun', 'holidays.index', 'holidays.*', ['schedules.view']),
                 ],
             ],
 

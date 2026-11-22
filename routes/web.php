@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Volt::route('schedules', 'schedules.index')->middleware('permission:schedules.view')->name('schedules.index');
     Volt::route('doctors/{doctor}/hours', 'schedules.edit')->middleware('permission:schedules.view')->name('schedules.edit');
+    Volt::route('holidays', 'schedules.holidays')->middleware('permission:schedules.view')->name('holidays.index');
 });
 
 // M01 Administration

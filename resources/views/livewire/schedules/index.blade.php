@@ -29,10 +29,12 @@ new #[Title('Doctor schedules')] class extends Component {
                     'current' => $current,
                     'days' => $current?->blocks->groupBy('weekday') ?? collect(),
                     'upcoming' => $upcoming,
+                    'awayToday' => \App\Models\DoctorTimeOff::where('doctor_id', $doctor->id)->overlapping($today, $today->copy()->addDay())->first(),
                 ];
             });
 
         return [
+            'holidayToday' => \App\Models\ClinicHoliday::forDate($today),
             'rows' => $doctors,
             'week' => Week::ORDER,
             'canManage' => Gate::allows('schedules.manage'),
@@ -48,6 +50,10 @@ new #[Title('Doctor schedules')] class extends Component {
 
     @if (session('status'))
         <flux:callout variant="success" icon="check-circle" :heading="session('status')" />
+    @endif
+
+    @if ($holidayToday)
+        <flux:callout icon="sun" color="amber" :heading="__('Clinic closed today: :name', ['name' => $holidayToday->name])" />
     @endif
 
     <div class="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
@@ -74,6 +80,11 @@ new #[Title('Doctor schedules')] class extends Component {
                             @endif
                             @if ($row['upcoming'])
                                 <flux:badge size="sm" color="blue" class="mt-1">{{ __('Changes :date', ['date' => $row['upcoming']->effective_from->format('d M')]) }}</flux:badge>
+                            @endif
+                            @if ($row['awayToday'])
+                                <flux:badge size="sm" color="red" class="mt-1">
+                                    {{ $row['awayToday']->type === \App\Enums\TimeOffType::Leave ? __('On leave today') : __('Blocked :time', ['time' => $row['awayToday']->starts_at->format('H:i').'–'.$row['awayToday']->ends_at->format('H:i')]) }}
+                                </flux:badge>
                             @endif
                             @unless ($row['doctor']->is_bookable)
                                 <flux:badge size="sm" color="amber" class="mt-1">{{ __('Not bookable') }}</flux:badge>

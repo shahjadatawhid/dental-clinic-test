@@ -1,6 +1,8 @@
 <?php
 
+use App\Actions\Schedules\AddTimeOff;
 use App\Actions\Schedules\RemoveUpcomingSchedule;
+use App\Models\DoctorTimeOff;
 use App\Actions\Schedules\SaveDoctorSchedule;
 use App\Models\Chair;
 use App\Models\Doctor;
@@ -103,6 +105,46 @@ new class extends Component {
         $this->redirectRoute('schedules.index', navigate: true);
     }
 
+    /** New leave / blocked-time entry */
+    public array $off = [
+        'type' => 'leave',
+        'from_date' => '',
+        'to_date' => '',
+        'start_time' => '',
+        'end_time' => '',
+        'reason' => '',
+    ];
+
+    public function addTimeOff(AddTimeOff $action): void
+    {
+        Gate::authorize('schedules.manage');
+        $this->resetErrorBag();
+
+        $input = $this->off['type'] === 'leave'
+            ? \Illuminate\Support\Arr::except($this->off, ['start_time', 'end_time'])
+            : \Illuminate\Support\Arr::except($this->off, ['to_date']);
+
+        try {
+            $entry = $action->handle($this->doctor, $input);
+        } catch (ValidationException $e) {
+            foreach ($e->errors() as $field => $messages) {
+                $this->addError("off.{$field}", $messages[0]);
+            }
+
+            return;
+        }
+
+        $this->off = ['type' => $this->off['type'], 'from_date' => '', 'to_date' => '', 'start_time' => '', 'end_time' => '', 'reason' => ''];
+        session()->flash('off-status', __('Added: :what', ['what' => $entry->describe()]));
+    }
+
+    public function removeTimeOff(int $id): void
+    {
+        Gate::authorize('schedules.manage');
+
+        DoctorTimeOff::where('doctor_id', $this->doctor->id)->findOrFail($id)->delete();
+    }
+
     public function removeUpcoming(int $scheduleId, RemoveUpcomingSchedule $action): void
     {
         Gate::authorize('schedules.manage');
@@ -126,6 +168,11 @@ new class extends Component {
             'week' => Week::ORDER,
             'chairs' => Chair::usable()->with('room')->get()->sortBy(fn (Chair $c) => [$c->room->sort_order, $c->room->name, $c->sort_order]),
             'history' => $this->doctor->schedules()->withCount('blocks')->get(),
+            // Upcoming entries plus the last 30 days, for reference.
+            'timeOff' => DoctorTimeOff::where('doctor_id', $this->doctor->id)
+                ->where('ends_at', '>', today()->subDays(30))
+                ->orderBy('starts_at')
+                ->get(),
             'canManage' => Gate::allows('schedules.manage'),
             'hoursPerWeek' => collect($this->days)->flatten(1)->sum(function ($b) {
                 if (! preg_match('/^\d{2}:\d{2}$/', $b['start_time'] ?? '') || ! preg_match('/^\d{2}:\d{2}$/', $b['end_time'] ?? '')) {
@@ -209,6 +256,58 @@ new class extends Component {
             <flux:text>{{ __(':hours hours per week', ['hours' => rtrim(rtrim(number_format($hoursPerWeek, 1), '0'), '.')]) }}</flux:text>
         </div>
     </form>
+
+    <div class="flex flex-col gap-3">
+        <flux:heading size="lg">{{ __('Leave & blocked time') }}</flux:heading>
+        <flux:text class="-mt-2 text-sm">{{ __('No appointments can be booked in these periods. Existing appointments are not moved automatically.') }}</flux:text>
+
+        @if (session('off-status'))
+            <flux:callout variant="success" icon="check-circle" :heading="session('off-status')" />
+        @endif
+
+        <ul class="divide-y divide-zinc-100 rounded-lg border border-zinc-200 text-sm dark:divide-zinc-800 dark:border-zinc-700">
+            @forelse ($timeOff as $entry)
+                <li wire:key="off-{{ $entry->id }}" @class(['flex flex-wrap items-center justify-between gap-2 px-3 py-2', 'text-zinc-400' => $entry->ends_at->isPast()])>
+                    <span class="flex items-center gap-2">
+                        <flux:badge size="sm" :color="$entry->type === \App\Enums\TimeOffType::Leave ? 'red' : 'amber'">{{ $entry->type->label() }}</flux:badge>
+                        {{ $entry->describe() }}
+                        @if ($entry->reason) <span class="text-zinc-500">· {{ $entry->reason }}</span> @endif
+                    </span>
+                    @if ($canManage)
+                        <flux:button size="xs" variant="ghost" icon="trash" wire:click="removeTimeOff({{ $entry->id }})"
+                            wire:confirm="{{ __('Remove this entry?') }}">{{ __('Remove') }}</flux:button>
+                    @endif
+                </li>
+            @empty
+                <li class="px-3 py-2 text-zinc-500">{{ __('None planned.') }}</li>
+            @endforelse
+        </ul>
+
+        @if ($canManage)
+            <form wire:submit="addTimeOff" class="flex flex-col gap-3 rounded-lg border border-dashed border-zinc-300 p-4 dark:border-zinc-600">
+                <flux:radio.group wire:model.live="off.type" variant="segmented" size="sm">
+                    <flux:radio value="leave" :label="__('Leave (whole days)')" />
+                    <flux:radio value="blocked" :label="__('Blocked time')" />
+                </flux:radio.group>
+
+                <div class="flex flex-wrap items-start gap-3">
+                    <flux:input type="date" wire:model="off.from_date" :label="$off['type'] === 'leave' ? __('First day') : __('Date')" class="w-44" />
+                    @if ($off['type'] === 'leave')
+                        <flux:input type="date" wire:model="off.to_date" :label="__('Last day')" :description="__('Blank = one day')" class="w-44" />
+                    @else
+                        <flux:input type="time" wire:model="off.start_time" :label="__('From')" class="w-32" />
+                        <flux:input type="time" wire:model="off.end_time" :label="__('To')" class="w-32" />
+                    @endif
+                    <flux:input wire:model="off.reason" :label="__('Reason (optional)')" class="min-w-48 flex-1" />
+                </div>
+                @foreach (['type', 'from_date', 'to_date', 'start_time', 'end_time', 'reason'] as $f)
+                    <flux:error name="off.{{ $f }}" />
+                @endforeach
+
+                <div><flux:button type="submit" size="sm" icon="plus">{{ __('Add') }}</flux:button></div>
+            </form>
+        @endif
+    </div>
 
     <div class="flex flex-col gap-3">
         <flux:heading size="lg">{{ __('Routine history') }}</flux:heading>

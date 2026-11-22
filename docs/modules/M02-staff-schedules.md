@@ -14,7 +14,8 @@ Who works, where, and when — the input for appointment availability.
 
 ## Business rules
 - Working-hour changes have `effective_from` so past schedules stay correct.
-- Adding leave over existing appointments shows a warning listing affected appointments (they must be rescheduled manually).
+- Adding leave over existing appointments shows a warning listing affected appointments (they must be rescheduled manually). **Pending M04** — appointments do not exist yet; add this check to `AddTimeOff` / the hours page and to `AddClinicHolidays` when M04-04 is built.
+- Availability for a date = `DoctorAvailability::workingPeriods()` (routine − holiday − leave − blocked time). M04-03 builds on it and subtracts existing bookings.
 
 ## Screens
 Staff list/form · Doctor profile (tabs: info, working hours, leave) · Rooms & chairs · Holidays
