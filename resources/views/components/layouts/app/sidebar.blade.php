@@ -11,27 +11,17 @@
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
+            {{-- Menu items and their permissions live in App\Navigation\Menu --}}
             <flux:navlist variant="outline">
-                <flux:navlist.group class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                </flux:navlist.group>
-
-                @canany(['users.view', 'roles.view', 'settings.view', 'audit.view'])
-                    <flux:navlist.group :heading="__('Administration')" class="grid">
-                        @can('users.view')
-                            <flux:navlist.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
-                        @endcan
-                        @can('roles.view')
-                            <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>{{ __('Roles & permissions') }}</flux:navlist.item>
-                        @endcan
-                        @can('settings.view')
-                            <flux:navlist.item icon="cog-6-tooth" :href="route('admin.settings.index')" :current="request()->routeIs('admin.settings.*')" wire:navigate>{{ __('Clinic settings') }}</flux:navlist.item>
-                        @endcan
-                        @can('audit.view')
-                            <flux:navlist.item icon="clipboard-document-list" :href="route('admin.audit.index')" :current="request()->routeIs('admin.audit.*')" wire:navigate>{{ __('Audit history') }}</flux:navlist.item>
-                        @endcan
+                @foreach (\App\Navigation\Menu::for(auth()->user()) as $section)
+                    <flux:navlist.group :heading="$section['heading'] ? __($section['heading']) : null" class="grid">
+                        @foreach ($section['items'] as $item)
+                            <flux:navlist.item :icon="$item->icon" :href="$item->url()" :current="$item->isCurrent()" wire:navigate>
+                                {{ __($item->label) }}
+                            </flux:navlist.item>
+                        @endforeach
                     </flux:navlist.group>
-                @endcanany
+                @endforeach
             </flux:navlist>
 
             <flux:spacer />
