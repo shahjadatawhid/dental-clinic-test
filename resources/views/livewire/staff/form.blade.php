@@ -65,6 +65,7 @@ new class extends Component {
     public function save(SaveStaff $action): void
     {
         Gate::authorize('staff.manage');
+        $this->resetErrorBag();
 
         try {
             $saved = $action->handle($this->staff, $this->form, $this->signature);

@@ -89,6 +89,8 @@ new #[Title('Rooms & chairs')] class extends Component {
     /** Run an action and show its validation errors next to the given field. */
     private function run(callable $callback, string $errorKey): mixed
     {
+        $this->resetErrorBag();
+
         try {
             return $callback();
         } catch (ValidationException $e) {

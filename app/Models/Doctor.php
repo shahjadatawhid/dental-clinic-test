@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Models\Concerns\Auditable;
 use App\Models\Concerns\HasUserstamps;
+use Carbon\CarbonInterface;
 use Database\Factories\DoctorFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Doctor-specific details. Name, phone and active status come from the staff record.
@@ -63,6 +66,33 @@ class Doctor extends Model
     public function slotMinutes(): int
     {
         return $this->default_slot_minutes ?? (int) setting('appointments.default_slot_minutes');
+    }
+
+    /** @return HasMany<DoctorSchedule, $this> versions of the weekly routine, newest first */
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(DoctorSchedule::class)->orderByDesc('effective_from');
+    }
+
+    /** The routine version in force on a date (null if none). */
+    public function scheduleOn(CarbonInterface $date): ?DoctorSchedule
+    {
+        return $this->schedules()->activeOn($date)->first();
+    }
+
+    /**
+     * Working blocks on a specific date, earliest first. Leave, blocked time and holidays
+     * (M02-05) are NOT subtracted here — the availability service (M04) does that.
+     *
+     * @return Collection<int, DoctorScheduleBlock>
+     */
+    public function hoursOn(CarbonInterface $date): Collection
+    {
+        $schedule = $this->scheduleOn($date);
+
+        return $schedule === null
+            ? new Collection
+            : $schedule->blocks()->where('weekday', $date->dayOfWeek)->orderBy('start_time')->get();
     }
 
     /**

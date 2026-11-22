@@ -23,6 +23,7 @@ new #[Title('Clinic settings')] class extends Component {
     public function save(UpdateSettings $action): void
     {
         Gate::authorize('settings.manage');
+        $this->resetErrorBag();
 
         try {
             $action->handle($this->form);

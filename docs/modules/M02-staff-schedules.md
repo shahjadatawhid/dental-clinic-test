@@ -1,6 +1,6 @@
 # M02 — Staff, Doctors, Rooms & Schedules
 
-**Phase:** 1 · **Depends on:** M01 · **Tables:** staff, doctors, rooms, chairs, doctor_working_hours, doctor_time_off, clinic_holidays
+**Phase:** 1 · **Depends on:** M01 · **Tables:** staff, doctors, rooms, chairs, doctor_schedules, doctor_schedule_blocks, doctor_time_off, clinic_holidays
 
 ## Purpose
 Who works, where, and when — the input for appointment availability.

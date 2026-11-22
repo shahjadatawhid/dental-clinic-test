@@ -30,7 +30,8 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 | `doctors` | staff_id FK UQ, registration_no UQ nullable (BMDC), specialty, qualifications, signature_path, default_slot_minutes nullable (→ setting), calendar_color, is_bookable |
 | `rooms` | name UQ, notes, sort_order, is_active |
 | `chairs` | room_id FK, name (UQ per room), sort_order, is_active — usable only if its room is active |
-| `doctor_working_hours` | doctor_id FK, weekday (0–6), start_time, end_time, chair_id FK nullable, effective_from, effective_to |
+| `doctor_schedules` | doctor_id FK, effective_from (UQ per doctor), effective_to nullable, note — one version of the weekly routine; versions never overlap |
+| `doctor_schedule_blocks` | doctor_schedule_id FK (cascade), weekday (0=Sun…6=Sat), start_time, end_time, chair_id FK nullable — no overlapping blocks on a day |
 | `doctor_time_off` | doctor_id FK, starts_at, ends_at, type (leave/blocked/holiday), reason |
 | `clinic_holidays` | date UQ, name |
 
@@ -142,7 +143,7 @@ Balance = opening_balance + Σ invoice totals (non-void) − Σ allocations − 
 ## Relationship summary
 
 ```
-patients ─┬─< appointments >── doctors ──< doctor_working_hours
+patients ─┬─< appointments >── doctors ──< doctor_schedules ──< doctor_schedule_blocks
           ├─< visits ─┬─< treatments >── procedures
           │           ├─< prescriptions ─< prescription_items >── medicines
           │           └─< lab_orders >── labs

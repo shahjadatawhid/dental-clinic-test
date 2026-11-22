@@ -33,6 +33,7 @@ final class Menu
                 'items' => [
                     new MenuItem('Staff', 'identification', 'staff.index', 'staff.*', ['staff.view']),
                     new MenuItem('Rooms & chairs', 'building-office', 'rooms.index', 'rooms.*', ['staff.view']),
+                    new MenuItem('Doctor schedules', 'calendar-days', 'schedules.index', 'schedules.*', ['schedules.view']),
                 ],
             ],
 

@@ -2,6 +2,7 @@
 
 use App\Authorization\Permissions;
 use App\Enums\RoleName;
+use App\Models\Doctor;
 use App\Models\Staff;
 use App\Models\User;
 use App\Navigation\Menu;
@@ -49,6 +50,7 @@ function urlFor(Route $route): string
         'id' => fn () => 1,
         'hash' => fn () => 'x',
         'staff' => fn () => Staff::factory()->create()->id,
+        'doctor' => fn () => Doctor::factory()->create()->id,
     ];
 
     $params = [];
