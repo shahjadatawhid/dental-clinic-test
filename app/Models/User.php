@@ -3,7 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Concerns\Auditable;
 use Database\Factories\UserFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -13,7 +15,17 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable // implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    use Auditable, HasFactory, HasRoles, Notifiable;
+
+    /**
+     * Not written to the audit log (password and remember_token are hidden, so never logged).
+     *
+     * @return list<string>
+     */
+    protected function auditExcept(): array
+    {
+        return ['last_login_at'];
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +35,17 @@ class User extends Authenticatable // implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+    ];
+
+    /**
+     * Active status is changed only through App\Actions\Users\SetUserActive.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
     ];
 
     /**
@@ -46,7 +68,18 @@ class User extends Authenticatable // implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
+            'deactivated_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeActive($query): void
+    {
+        $query->where('is_active', true);
     }
 
     /**

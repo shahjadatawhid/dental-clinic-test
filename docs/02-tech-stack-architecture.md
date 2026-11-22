@@ -68,12 +68,27 @@ docs/
 - **Enums:** PHP backed enums for statuses; never magic strings.
 - **Soft deletes** only for master data (patients, medicines, procedures). Financial records are never deleted — they get `status = void` + reason.
 - **Authorization:** every Livewire action calls `$this->authorize()` / policies. Never rely on hiding buttons.
-- **Audit:** models with clinical or financial meaning use `LogsActivity`.
+- **Audit:** every model with clinical or financial meaning uses:
+  - `App\Models\Concerns\Auditable` — logs create/update/delete with old → new values and the acting user (`activity_log` table). Override `auditExcept()` to skip noisy columns; `$hidden` columns are never logged.
+  - `App\Models\Concerns\HasUserstamps` + `$table->userstamps();` in the migration — fills `created_by` / `updated_by`.
+  - `App\Support\Audit::record($event, $model, $description, $props, reason: ...)` for business events (void, approve, reopen, roles_changed...).
+  - Sign-in activity (login, logout, failed, blocked) goes to the `auth` log automatically.
+  - Never schedule `activitylog:clean` — the audit trail is part of the record.
+  - Viewed at **Administration → Audit history** (`audit.view`). Audit entries copy changed data, so a new Auditable model with clinical or settlement data **must** be added to [app/Authorization/AuditLogAccess.php](../app/Authorization/AuditLogAccess.php) with the permission needed to see it; otherwise e.g. an accountant could read clinical notes through the audit log.
+- **Settings:** a clinic-configurable value is added to [app/Settings/Definitions.php](../app/Settings/Definitions.php) (key, group, type, default, label, rules) and read with `setting('group.key')`. It then appears on **Administration → Clinic settings** automatically. Only non-default values are stored; changes are audited. Unknown keys throw, so typos fail loudly.
 - **i18n:** all UI text through `__()` so Bangla can be added later.
 - **Tests:** each Action has a feature test. Money and sequence logic must have tests before merge.
 
 ### Number sequences
-A `number_sequences` table holds one row per series (`patient`, `invoice`, `RV`, `PV`, `lab`, `purchase`). `NumberSequenceService::next('RV')` does `SELECT ... FOR UPDATE` inside the transaction, increments, formats (e.g. `RV-2026-000001`). Gaps only happen if a transaction rolls back — voided vouchers keep their number.
+- Series are the `App\Enums\SequenceSeries` cases (patient, invoice, receipt_voucher, payment_voucher, lab_order, purchase) with default formats (`FD-000001`, `RV-2026-000001`...).
+- `number_sequences` holds each series' prefix / format (`{prefix}`, `{year}`, `{yy}`, `{number}`) / padding / `reset_yearly`; `number_sequence_counters` holds the counter per period (the year if `reset_yearly`, else 0), so back-dated documents use their own year's counter.
+- Take a number **inside the transaction that saves the document**:
+  `$no = app(NumberSequenceService::class)->next(SequenceSeries::ReceiptVoucher, $receiptDate);`
+  The counter row is locked (`SELECT ... FOR UPDATE`) until commit. If the save fails the number is released (no gap); a voided document keeps its number.
+- `preview()` shows the next number for display only — never save it.
+- `php artisan app:sync-sequences` pre-creates series and counters for this year and next; it runs from the seeder and daily at 00:05 (needs the scheduler in production).
+- Concurrency is proven by `tests/Concurrency` (4 PHP processes × 25 numbers → 100 unique, gap-free). That suite doesn't use `RefreshDatabase` and cleans up after itself.
+- Prefix/format changes are audited. Confirm formats with the clinic (Q1, Q2) before real data. No admin screen yet — change via tinker or a later settings screen.
 
 ## Environments
 - **local** — developer machine, fictional seed data.

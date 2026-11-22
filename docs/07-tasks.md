@@ -31,21 +31,21 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M01-01** (S) Create Laravel project; configure `.env`, timezone `Asia/Dhaka`, locale · _P0-08_
 - [x] **M01-02** (S) Install Tailwind, Livewire, Alpine; base layout (sidebar, topbar) · _M01-01_
 - [x] **M01-03** (S) Install Pest, Pint, Larastan; add `composer test` / `lint` scripts · _M01-01_
-- [~] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_ — login/reset done by starter kit; public self-registration must be removed in M01-06
+- [x] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_ — public registration and self-delete removed
 - [x] **M01-05** (M) Install spatie/laravel-permission; seed permissions + 8 role templates from doc 04 · _M01-04_ — `app/Authorization/Permissions.php`, `php artisan app:sync-permissions`
-- [ ] **M01-06** (M) User management screen (list, create, deactivate, assign roles) · _M01-05_
-- [ ] **M01-07** (S) Block login for inactive users 🧪 · _M01-06_
-- [ ] **M01-08** (M) Roles & permissions editor (admin) with audit of changes · _M01-05, M01-10_
-- [ ] **M01-09** (S) `settings` table + `Setting` helper + settings screen · _M01-05_
-- [ ] **M01-10** (S) Install spatie/laravel-activitylog; `HasAudit` trait (created_by/updated_by + log) · _M01-01_
-- [ ] **M01-11** (M) `number_sequences` + `NumberSequenceService` with row lock 🧪 concurrency · _M01-01_
-- [ ] **M01-12** (S) Clinic profile screen (name, address, logo) · _M01-09_
-- [ ] **M01-13** (M) Audit log viewer with filters · _M01-10_
+- [x] **M01-06** (M) User management screen (list, create, deactivate, assign roles) · _M01-05_ — `/admin/users`
+- [x] **M01-07** (S) Block login for inactive users 🧪 · _M01-06_
+- [x] **M01-08** (M) Roles & permissions editor (admin) with audit of changes · _M01-05, M01-10_ — `/admin/roles`; reason required; admin role keeps user/role management
+- [x] **M01-09** (S) `settings` table + `Setting` helper + settings screen · _M01-05_ — `app/Settings/Definitions.php`, `setting()` helper, `/admin/settings`, idle sign-out
+- [x] **M01-10** (S) Install spatie/laravel-activitylog; `HasAudit` trait (created_by/updated_by + log) · _M01-01_ — `Auditable`, `HasUserstamps`, `Audit::record()`, auth log
+- [x] **M01-11** (M) `number_sequences` + `NumberSequenceService` with row lock 🧪 concurrency · _M01-01_ — `NumberSequenceService`, `SequenceSeries` enum, `app:sync-sequences` (daily), multi-process test in `tests/Concurrency`
+- [~] **M01-12** (S) Clinic profile screen (name, address, logo) · _M01-09_ — name/address/phone/email/reg no done as settings; logo upload pending
+- [x] **M01-13** (M) Audit log viewer with filters · _M01-10_ — `/admin/audit`; clinical logs hidden by `AuditLogAccess`; "History" link on users
 - [ ] **M01-14** (S) Role-based sidebar menu + 403 page; test forbidden URL access 🧪 · _M01-05_
 - [ ] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_
 
 ### M02 Staff & schedules
-- [ ] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_
+- [ ] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — use `Auditable` + `HasUserstamps`
 - [ ] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_
 - [ ] **M02-03** (S) Rooms & chairs CRUD · _M02-01_
 - [ ] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_

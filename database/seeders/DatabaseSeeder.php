@@ -5,12 +5,14 @@ namespace Database\Seeders;
 use App\Enums\RoleName;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
         $this->call(RolesAndPermissionsSeeder::class);
+        Artisan::call('app:sync-sequences');
 
         // Fictional login accounts for local development only.
         // Every account uses the password "password".

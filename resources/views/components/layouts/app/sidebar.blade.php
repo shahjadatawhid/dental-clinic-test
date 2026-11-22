@@ -12,22 +12,29 @@
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
+                <flux:navlist.group class="grid">
+                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                 </flux:navlist.group>
+
+                @canany(['users.view', 'roles.view', 'settings.view', 'audit.view'])
+                    <flux:navlist.group :heading="__('Administration')" class="grid">
+                        @can('users.view')
+                            <flux:navlist.item icon="users" :href="route('admin.users.index')" :current="request()->routeIs('admin.users.*')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                        @endcan
+                        @can('roles.view')
+                            <flux:navlist.item icon="shield-check" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>{{ __('Roles & permissions') }}</flux:navlist.item>
+                        @endcan
+                        @can('settings.view')
+                            <flux:navlist.item icon="cog-6-tooth" :href="route('admin.settings.index')" :current="request()->routeIs('admin.settings.*')" wire:navigate>{{ __('Clinic settings') }}</flux:navlist.item>
+                        @endcan
+                        @can('audit.view')
+                            <flux:navlist.item icon="clipboard-document-list" :href="route('admin.audit.index')" :current="request()->routeIs('admin.audit.*')" wire:navigate>{{ __('Audit history') }}</flux:navlist.item>
+                        @endcan
+                    </flux:navlist.group>
+                @endcanany
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    Repository
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
-                    Documentation
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

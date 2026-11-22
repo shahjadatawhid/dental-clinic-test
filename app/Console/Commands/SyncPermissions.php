@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Authorization\Permissions;
 use App\Enums\RoleName;
+use App\Support\Audit;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
@@ -34,7 +35,17 @@ class SyncPermissions extends Command
                     Role::create(['name' => $roleName, 'guard_name' => $guard])->syncPermissions($permissions);
                     $this->line("  created role <info>{$roleName}</info> with ".count($permissions).' permissions');
                 } elseif ($this->option('reset-roles')) {
+                    $old = $role->permissions()->pluck('name')->all();
                     $role->syncPermissions($permissions);
+
+                    $added = array_values(array_diff($permissions, $old));
+                    $removed = array_values(array_diff($old, $permissions));
+                    if ($added !== [] || $removed !== []) {
+                        Audit::record('permissions_changed', $role, "Permissions reset to template for role {$roleName}", [
+                            'role' => $roleName, 'added' => $added, 'removed' => $removed,
+                        ], reason: 'php artisan app:sync-permissions --reset-roles');
+                    }
+
                     $this->line("  reset role <comment>{$roleName}</comment> to template");
                 }
             }

@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+// Production needs the scheduler running every minute: `php artisan schedule:run` (cron / Task Scheduler).
+
+// Pre-create number counters for this year and next (avoids first-use races on 1 January).
+Schedule::command('app:sync-sequences')->dailyAt('00:05');

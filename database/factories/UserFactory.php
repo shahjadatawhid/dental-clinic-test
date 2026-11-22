@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\RoleName;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -41,5 +42,24 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
+    }
+
+    public function inactive(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_active' => false,
+            'deactivated_at' => now(),
+        ]);
+    }
+
+    /**
+     * Give the user a role template, e.g. User::factory()->withRole(RoleName::Doctor).
+     * Run `app:sync-permissions` first so the role exists.
+     */
+    public function withRole(RoleName ...$roles): static
+    {
+        return $this->afterCreating(
+            fn (User $user) => $user->syncRoles(array_map(fn ($r) => $r->value, $roles))
+        );
     }
 }
