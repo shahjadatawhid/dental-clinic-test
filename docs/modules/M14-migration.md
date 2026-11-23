@@ -9,7 +9,7 @@ Bring existing patient and finance records from the three spreadsheets into the 
 1. **Copy** the spreadsheets (never work on originals). Restrict sharing on originals.
 2. **Map columns** → document `spreadsheet column → table.column` for each sheet (fill table below).
 3. **Clean**: trim names, normalise phones, fix dates, flag blanks.
-4. **Detect duplicates**: same phone / same legacy ID / similar names → review list for staff.
+4. **Detect duplicates**: same phone / same legacy ID / similar names → review list for staff. A shared phone alone is not a duplicate (families share numbers); same phone + same name is.
 5. **Import to staging** via artisan commands (`php artisan import:patients file.xlsx --dry-run`):
    - Patients → `patients` with `legacy_code`.
    - Previous dues → `opening_balances` (verified amounts only).

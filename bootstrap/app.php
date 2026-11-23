@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\SignOutIdleSessions;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,6 +20,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+        ]);
+
+        // Runs on every web request, including Livewire updates.
+        $middleware->web(append: [
+            EnsureUserIsActive::class,
+            SignOutIdleSessions::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

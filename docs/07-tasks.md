@@ -31,40 +31,40 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M01-01** (S) Create Laravel project; configure `.env`, timezone `Asia/Dhaka`, locale · _P0-08_
 - [x] **M01-02** (S) Install Tailwind, Livewire, Alpine; base layout (sidebar, topbar) · _M01-01_
 - [x] **M01-03** (S) Install Pest, Pint, Larastan; add `composer test` / `lint` scripts · _M01-01_
-- [~] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_ — login/reset done by starter kit; public self-registration must be removed in M01-06
+- [x] **M01-04** (S) Auth scaffold (Breeze Livewire or Filament): login, logout, password reset · _M01-02_ — public registration and self-delete removed
 - [x] **M01-05** (M) Install spatie/laravel-permission; seed permissions + 8 role templates from doc 04 · _M01-04_ — `app/Authorization/Permissions.php`, `php artisan app:sync-permissions`
-- [ ] **M01-06** (M) User management screen (list, create, deactivate, assign roles) · _M01-05_
-- [ ] **M01-07** (S) Block login for inactive users 🧪 · _M01-06_
-- [ ] **M01-08** (M) Roles & permissions editor (admin) with audit of changes · _M01-05, M01-10_
-- [ ] **M01-09** (S) `settings` table + `Setting` helper + settings screen · _M01-05_
-- [ ] **M01-10** (S) Install spatie/laravel-activitylog; `HasAudit` trait (created_by/updated_by + log) · _M01-01_
-- [ ] **M01-11** (M) `number_sequences` + `NumberSequenceService` with row lock 🧪 concurrency · _M01-01_
-- [ ] **M01-12** (S) Clinic profile screen (name, address, logo) · _M01-09_
-- [ ] **M01-13** (M) Audit log viewer with filters · _M01-10_
-- [ ] **M01-14** (S) Role-based sidebar menu + 403 page; test forbidden URL access 🧪 · _M01-05_
-- [ ] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_
+- [x] **M01-06** (M) User management screen (list, create, deactivate, assign roles) · _M01-05_ — `/admin/users`
+- [x] **M01-07** (S) Block login for inactive users 🧪 · _M01-06_
+- [x] **M01-08** (M) Roles & permissions editor (admin) with audit of changes · _M01-05, M01-10_ — `/admin/roles`; reason required; admin role keeps user/role management
+- [x] **M01-09** (S) `settings` table + `Setting` helper + settings screen · _M01-05_ — `app/Settings/Definitions.php`, `setting()` helper, `/admin/settings`, idle sign-out
+- [x] **M01-10** (S) Install spatie/laravel-activitylog; `HasAudit` trait (created_by/updated_by + log) · _M01-01_ — `Auditable`, `HasUserstamps`, `Audit::record()`, auth log
+- [x] **M01-11** (M) `number_sequences` + `NumberSequenceService` with row lock 🧪 concurrency · _M01-01_ — `NumberSequenceService`, `SequenceSeries` enum, `app:sync-sequences` (daily), multi-process test in `tests/Concurrency`
+- [~] **M01-12** (S) Clinic profile screen (name, address, logo) · _M01-09_ — name/address/phone/email/reg no done as settings; logo upload pending
+- [x] **M01-13** (M) Audit log viewer with filters · _M01-10_ — `/admin/audit`; clinical logs hidden by `AuditLogAccess`; "History" link on users
+- [x] **M01-14** (S) Role-based sidebar menu + 403 page; test forbidden URL access 🧪 · _M01-05_ — `app/Navigation/Menu.php`; 403/404/419 pages; RouteAccessTest guards every route
+- [x] **M01-15** (S) Fictional data seeder base (factories) · _M01-01_ — `fake_bd()` (BD names/phones/addresses), DevUsersSeeder, DemoDataSeeder hook, production guard
 
 ### M02 Staff & schedules
-- [ ] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_
-- [ ] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_
-- [ ] **M02-03** (S) Rooms & chairs CRUD · _M02-01_
-- [ ] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_
-- [ ] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_
-- [ ] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_
+- [x] **M02-01** (S) Migrations + models: staff, doctors, rooms, chairs · _M01-10_ — Staff, Doctor, Room, Chair + factories; Auditable + HasUserstamps
+- [x] **M02-02** (M) Staff list/form; doctor profile fields; link user account · _M02-01_ — `/staff`; SaveStaff action; private signature upload; phone normalised
+- [x] **M02-03** (S) Rooms & chairs CRUD · _M02-01_ — `/rooms` single page, inline edit, deactivate only
+- [x] **M02-04** (M) Doctor working hours editor (multiple blocks/day, chair, effective dates) · _M02-02_ — versioned `doctor_schedules` + blocks; `/schedules`, `/doctors/{id}/hours`; `$doctor->hoursOn($date)`
+- [x] **M02-05** (S) Doctor leave / blocked time; clinic holidays · _M02-02_ — `doctor_time_off`, `clinic_holidays`, `DoctorAvailability::workingPeriods()`; `/holidays`; leave UI on hours page
+- [x] **M02-06** (S) Seed fictional doctors, rooms, chairs, hours · _M02-04_ — `StaffSeeder` (4 doctors, 3 staff, 3 rooms/4 chairs, routines, demo leave, fixed BD holidays)
 
 ### M03 Patients (core)
-- [ ] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_
-- [ ] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_
-- [ ] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_
-- [ ] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_
-- [ ] **M03-05** (M) Register / edit patient form · _M03-02_
-- [ ] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_
-- [ ] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_
+- [x] **M03-01** (S) Patients migration + model + factory (patient_code, legacy_code, indexes) · _M01-11_ — + registered_on, age_years/age_recorded_on, merged_into_id; patient audit log needs patients.view
+- [x] **M03-02** (M) `RegisterPatient` action (auto code, phone normalise) 🧪 · _M03-01_ — `RegisterPatient` + shared `PatientRules` (clean-up, validation)
+- [x] **M03-03** (M) Duplicate detection (phone / name+DOB) + warning on form 🧪 · _M03-02_ — `PossibleDuplicates::check`: same phone + same name / similar name + age / family on the number; never blocks (families share phones); shown on the form in M03-05
+- [x] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_ — `/patients` + `SearchPatients`; sidebar "Find patient" box (press `/`); lab staff (`patients.view_minimal`) see/search name+code only; rows link to the profile
+- [x] **M03-05** (M) Register / edit patient form · _M03-02_ — `/patients/register`, `/patients/{id}/edit`; `UpdatePatient`; guardian name + relation (asked for under 18); live duplicate panel; "probably the same person" needs a tick to continue
+- [x] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_ — `/patients/{id}`; header code/name/age/gender/old ID/phone/guardian; overview + "others on this number"; tabs shown by permission, placeholders until M04/M05/M07; merged record opens the survivor; search, quick search, form and duplicate panel link here
+- [x] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_ — `PatientSeeder` (DEMO_PATIENTS, default 2,000; families on one phone, children with guardian, old IDs, age-only, inactive, a few likely duplicates); tests/Performance: 20,000 patients, every search ≈20–30 ms
 
 ### M04 Appointments & queue
 - [ ] **M04-01** (S) appointment_types + appointments migrations, `AppointmentStatus` enum with allowed transitions 🧪 · _M02-01, M03-01_
 - [ ] **M04-02** (S) MySQL overlap guard: indexes + `lockForUpdate()` on doctor/chair row inside booking transaction · _M04-01_
-- [ ] **M04-03** (L) `AvailabilityService` (hours − leave − holidays − bookings, by duration/chair) 🧪 · _M02-05, M04-01_
+- [ ] **M04-03** (L) `AvailabilityService` (hours − leave − holidays − bookings, by duration/chair) 🧪 · _M02-05, M04-01_ — build on `DoctorAvailability::workingPeriods()`; also add the "appointments affected by new leave/holiday" warning (M02 doc)
 - [ ] **M04-04** (M) `BookAppointment` / `RescheduleAppointment` / `CancelAppointment` actions 🧪 double-booking · _M04-03_
 - [ ] **M04-05** (L) Calendar view (day/week, by doctor/chair) · _M04-04_
 - [ ] **M04-06** (M) Booking modal: doctor → date → free slots → patient find/quick-register → confirm; alternative doctors when none free · _M04-04, M03-04_

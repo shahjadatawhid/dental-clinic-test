@@ -2,26 +2,29 @@
 
 namespace Database\Seeders;
 
-use App\Enums\RoleName;
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
+/**
+ * `php artisan db:seed` (or `migrate --seed`).
+ *
+ * Reference data needed in every environment runs first. Fictional accounts and demo
+ * records run only in local/testing — production never gets made-up data.
+ */
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // Every environment
         $this->call(RolesAndPermissionsSeeder::class);
+        Artisan::call('app:sync-sequences');
 
-        // Fictional login accounts for local development only.
-        // Every account uses the password "password".
+        // Development only
         if (app()->environment('local', 'testing')) {
-            foreach (RoleName::cases() as $role) {
-                $user = User::firstOrCreate(
-                    ['email' => str_replace('_', '-', $role->value).'@clinic.test'],
-                    ['name' => $role->label(), 'password' => 'password', 'email_verified_at' => now()],
-                );
-                $user->syncRoles([$role->value]);
-            }
+            $this->call([
+                DevUsersSeeder::class,
+                DemoDataSeeder::class,
+            ]);
         }
     }
 }

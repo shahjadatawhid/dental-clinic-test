@@ -28,14 +28,27 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
+        if (! Auth::validate(['email' => $this->email, 'password' => $this->password])) {
             RateLimiter::hit($this->throttleKey());
+            event(new \Illuminate\Auth\Events\Failed('web', Auth::getLastAttempted(), ['email' => $this->email]));
 
             throw ValidationException::withMessages([
                 'email' => __('auth.failed'),
             ]);
         }
 
+        /** @var \App\Models\User $user */
+        $user = Auth::getLastAttempted();
+
+        if (! $user->is_active) {
+            \App\Support\Audit::record('login_blocked', $user, 'Login blocked: account deactivated', causer: $user);
+
+            throw ValidationException::withMessages([
+                'email' => __('This account has been deactivated. Please contact the clinic administrator.'),
+            ]);
+        }
+
+        Auth::login($user, $this->remember);
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
@@ -109,8 +122,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
         </div>
     </form>
 
-    <div class="space-x-1 text-center text-sm text-zinc-600 dark:text-zinc-400">
-        Don't have an account?
-        <x-text-link href="{{ route('register') }}">Sign up</x-text-link>
-    </div>
+    <p class="text-center text-sm text-zinc-600 dark:text-zinc-400">
+        {{ __('Accounts are created by the clinic administrator.') }}
+    </p>
 </div>

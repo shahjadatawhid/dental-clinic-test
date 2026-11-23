@@ -121,10 +121,56 @@ final class Permissions
         'reports.export' => 'Export reports (logged)',
     ];
 
+    /**
+     * Screen groups for the role editor: label => permission prefixes.
+     *
+     * @var array<string, list<string>>
+     */
+    public const GROUPS = [
+        'Administration' => ['users', 'roles', 'settings', 'audit'],
+        'Staff & schedules' => ['staff', 'schedules'],
+        'Patients' => ['patients'],
+        'Appointments' => ['appointments'],
+        'Clinical' => ['visits', 'procedures'],
+        'Prescriptions' => ['medicines', 'prescriptions'],
+        'Billing' => ['invoices', 'payments', 'refunds'],
+        'Expenses' => ['expenses'],
+        'Closing & periods' => ['closing', 'periods'],
+        'Doctor settlements' => ['settlements'],
+        'Lab' => ['lab'],
+        'Inventory' => ['inventory'],
+        'Reports' => ['reports'],
+    ];
+
+    /**
+     * Permissions the system_admin role must always keep, so nobody can lock
+     * every administrator out of user and role management.
+     *
+     * @var list<string>
+     */
+    public const ADMIN_REQUIRED = ['users.view', 'users.manage', 'roles.view', 'roles.manage'];
+
     /** @return list<string> */
     public static function all(): array
     {
         return array_keys(self::ALL);
+    }
+
+    /**
+     * @return array<string, array<string, string>> group label => [permission => description]
+     */
+    public static function grouped(): array
+    {
+        $groups = [];
+        foreach (self::GROUPS as $label => $prefixes) {
+            $groups[$label] = array_filter(
+                self::ALL,
+                fn (string $permission) => in_array(strtok($permission, '.'), $prefixes, true),
+                ARRAY_FILTER_USE_KEY,
+            );
+        }
+
+        return $groups;
     }
 
     /**

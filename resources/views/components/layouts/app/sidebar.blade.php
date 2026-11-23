@@ -11,23 +11,24 @@
                 <x-app-logo class="size-8" href="#"></x-app-logo>
             </a>
 
+            @canany(['patients.view', 'patients.view_minimal'])
+                <livewire:patients.quick-search />
+            @endcanany
+
+            {{-- Menu items and their permissions live in App\Navigation\Menu --}}
             <flux:navlist variant="outline">
-                <flux:navlist.group heading="Platform" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>Dashboard</flux:navlist.item>
-                </flux:navlist.group>
+                @foreach (\App\Navigation\Menu::for(auth()->user()) as $section)
+                    <flux:navlist.group :heading="$section['heading'] ? __($section['heading']) : null" class="grid">
+                        @foreach ($section['items'] as $item)
+                            <flux:navlist.item :icon="$item->icon" :href="$item->url()" :current="$item->isCurrent()" wire:navigate>
+                                {{ __($item->label) }}
+                            </flux:navlist.item>
+                        @endforeach
+                    </flux:navlist.group>
+                @endforeach
             </flux:navlist>
 
             <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    Repository
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
-                    Documentation
-                </flux:navlist.item>
-            </flux:navlist>
 
             <!-- Desktop User Menu -->
             <flux:dropdown position="bottom" align="start">

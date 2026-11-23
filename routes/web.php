@@ -3,9 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::redirect('/', '/dashboard')->name('home');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -17,6 +15,41 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
+});
+
+// M03 Patients
+Route::middleware(['auth', 'verified'])->group(function () {
+    Volt::route('patients', 'patients.index')->middleware('permission:patients.view|patients.view_minimal')->name('patients.index');
+    Volt::route('patients/register', 'patients.form')->middleware('permission:patients.create')->name('patients.create');
+    Volt::route('patients/{patient}', 'patients.show')->middleware('permission:patients.view')->whereNumber('patient')->name('patients.show');
+    Volt::route('patients/{patient}/edit', 'patients.form')->middleware('permission:patients.update')->name('patients.edit');
+});
+
+// M02 Staff & schedules
+Route::middleware(['auth', 'verified'])->group(function () {
+    Volt::route('staff', 'staff.index')->middleware('permission:staff.view')->name('staff.index');
+    Volt::route('staff/create', 'staff.form')->middleware('permission:staff.manage')->name('staff.create');
+    Volt::route('staff/{staff}/edit', 'staff.form')->middleware('permission:staff.manage')->name('staff.edit');
+
+    Volt::route('rooms', 'rooms.index')->middleware('permission:staff.view')->name('rooms.index');
+
+    Volt::route('schedules', 'schedules.index')->middleware('permission:schedules.view')->name('schedules.index');
+    Volt::route('doctors/{doctor}/hours', 'schedules.edit')->middleware('permission:schedules.view')->name('schedules.edit');
+    Volt::route('holidays', 'schedules.holidays')->middleware('permission:schedules.view')->name('holidays.index');
+});
+
+// M01 Administration
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Volt::route('users', 'admin.users.index')->middleware('permission:users.view')->name('users.index');
+    Volt::route('users/create', 'admin.users.form')->middleware('permission:users.manage')->name('users.create');
+    Volt::route('users/{user}/edit', 'admin.users.form')->middleware('permission:users.manage')->name('users.edit');
+
+    Volt::route('roles', 'admin.roles.index')->middleware('permission:roles.view')->name('roles.index');
+    Volt::route('roles/{role:name}', 'admin.roles.edit')->middleware('permission:roles.view')->name('roles.edit');
+
+    Volt::route('settings', 'admin.settings.index')->middleware('permission:settings.view')->name('settings.index');
+
+    Volt::route('audit', 'admin.audit.index')->middleware('permission:audit.view')->name('audit.index');
 });
 
 require __DIR__.'/auth.php';

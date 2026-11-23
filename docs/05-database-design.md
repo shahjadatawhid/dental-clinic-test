@@ -15,7 +15,7 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `users` | name, email UQ, phone, password, is_active, last_login_at, staff_id FK nullable |
+| `users` | name, email UQ, phone, password, is_active, deactivated_at, last_login_at (staff profile links back via `staff.user_id`) |
 | `roles`, `permissions`, `model_has_roles`, ... | from spatie/laravel-permission |
 | `settings` | key UQ, value json, effective_from date nullable, updated_by |
 | `activity_log` | from spatie/laravel-activitylog (who, what model, old/new values, reason) |
@@ -26,11 +26,12 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `staff` | full_name, type (doctor/staff), designation, phone, email, joined_on, is_active |
-| `doctors` | staff_id FK UQ, bmdc_reg_no, specialty, qualifications, signature_path, default_slot_minutes, color |
-| `rooms` | name, is_active |
-| `chairs` | room_id FK, name, is_active |
-| `doctor_working_hours` | doctor_id FK, weekday (0–6), start_time, end_time, chair_id FK nullable, effective_from, effective_to |
+| `staff` | user_id FK UQ nullable, full_name, type (doctor/staff), designation, gender, phone IDX, email, joined_on, left_on, is_active, notes — never deleted |
+| `doctors` | staff_id FK UQ, registration_no UQ nullable (BMDC), specialty, qualifications, signature_path, default_slot_minutes nullable (→ setting), calendar_color, is_bookable |
+| `rooms` | name UQ, notes, sort_order, is_active |
+| `chairs` | room_id FK, name (UQ per room), sort_order, is_active — usable only if its room is active |
+| `doctor_schedules` | doctor_id FK, effective_from (UQ per doctor), effective_to nullable, note — one version of the weekly routine; versions never overlap |
+| `doctor_schedule_blocks` | doctor_schedule_id FK (cascade), weekday (0=Sun…6=Sat), start_time, end_time, chair_id FK nullable — no overlapping blocks on a day |
 | `doctor_time_off` | doctor_id FK, starts_at, ends_at, type (leave/blocked/holiday), reason |
 | `clinic_holidays` | date UQ, name |
 
@@ -38,7 +39,7 @@ Legend: **PK** primary key · **FK** foreign key · **UQ** unique · **IDX** ind
 
 | Table | Key columns |
 |-------|-------------|
-| `patients` | patient_code UQ, legacy_code IDX nullable, full_name IDX, gender, date_of_birth nullable, age_years nullable (if DOB unknown), phone IDX, alt_phone, email, address, occupation, preferred_language, emergency_contact_name/phone, referred_by, is_active, merged_into_id FK nullable, soft deletes |
+| `patients` | patient_code UQ (FD-MM-YY-NNNNNN), legacy_code IDX nullable (not unique), registered_on, full_name IDX, gender, date_of_birth nullable, age_years + age_recorded_on (if DOB unknown), phone IDX (may be shared by a family), alt_phone IDX, email, address, occupation, preferred_language (bn/en), emergency_contact_name/phone, guardian_name + guardian_relation (mother/father/grandparent/sibling/spouse/other; for children), referred_by, notes, is_active, merged_into_id FK nullable — never deleted |
 | `patient_consents` | patient_id, type (treatment/data/sharing), given_at, given_by_name, document media, revoked_at |
 | `patient_alerts` | patient_id, type (allergy/condition/medication/other), title, severity, notes, source, recorded_by, recorded_at, resolved_at |
 | `patient_medical_history` | patient_id, condition, details, since, recorded_by, recorded_at |
@@ -142,7 +143,7 @@ Balance = opening_balance + Σ invoice totals (non-void) − Σ allocations − 
 ## Relationship summary
 
 ```
-patients ─┬─< appointments >── doctors ──< doctor_working_hours
+patients ─┬─< appointments >── doctors ──< doctor_schedules ──< doctor_schedule_blocks
           ├─< visits ─┬─< treatments >── procedures
           │           ├─< prescriptions ─< prescription_items >── medicines
           │           └─< lab_orders >── labs

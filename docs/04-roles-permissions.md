@@ -7,7 +7,10 @@ Implemented with `spatie/laravel-permission`. Roles are **templates**; an admin 
 - Permission list + role templates: [app/Authorization/Permissions.php](../app/Authorization/Permissions.php) — **the source of truth**; keep this doc in sync with it.
 - Role names: [app/Enums/RoleName.php](../app/Enums/RoleName.php)
 - Sync to database: `php artisan app:sync-permissions` — creates missing permissions/roles; new roles get their template; existing roles are left alone so admin changes survive. `--reset-roles` overwrites every role with its template.
-- Tests: [tests/Feature/Authorization/RolesAndPermissionsTest.php](../tests/Feature/Authorization/RolesAndPermissionsTest.php)
+- Tests: [tests/Feature/Authorization/RolesAndPermissionsTest.php](../tests/Feature/Authorization/RolesAndPermissionsTest.php), [tests/Feature/Admin/RoleEditorTest.php](../tests/Feature/Admin/RoleEditorTest.php)
+- Screen: **Administration → Roles & permissions** (`/admin/roles`). `roles.view` can look; `roles.manage` can change. Every change needs a written reason and is audited (`permissions_changed` with added/removed). Roles that differ from their template are marked "Customised"; "Reset to template" restores the starting set.
+- The `system_admin` role can never lose `users.view`, `users.manage`, `roles.view`, `roles.manage` (`Permissions::ADMIN_REQUIRED`).
+- New custom roles are not supported yet — only the 8 templates. Add a case to `RoleName` + a template if the clinic needs another role.
 
 ## Permission naming
 
