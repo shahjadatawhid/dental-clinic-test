@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
  *
  * Each module adds its own seeder here as it is built, in dependency order, e.g.
  *   M02 StaffSeeder (doctors, rooms, chairs, working hours)
- *   M03 PatientSeeder (2,000+ patients for search testing)
+ *   M03 PatientSeeder (2,000+ patients, families sharing phones; DEMO_PATIENTS)
  *   M04 AppointmentSeeder ...
  *
  * Rules: fictional data only (factories + fake_bd()->name() etc.), safe to run twice,
@@ -26,7 +26,7 @@ class DemoDataSeeder extends Seeder
 
         $this->call([
             StaffSeeder::class,          // M02-06
-            // PatientSeeder::class,     // M03-07
+            PatientSeeder::class,        // M03-07
         ]);
     }
 }

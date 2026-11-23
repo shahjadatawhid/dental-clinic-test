@@ -59,7 +59,7 @@ Work top to bottom. A task is **done** when code + test (where noted 🧪) are m
 - [x] **M03-04** (M) Patient search page (name/phone/code/legacy) + global top-bar search · _M03-01_ — `/patients` + `SearchPatients`; sidebar "Find patient" box (press `/`); lab staff (`patients.view_minimal`) see/search name+code only; rows link to the profile
 - [x] **M03-05** (M) Register / edit patient form · _M03-02_ — `/patients/register`, `/patients/{id}/edit`; `UpdatePatient`; guardian name + relation (asked for under 18); live duplicate panel; "probably the same person" needs a tick to continue
 - [x] **M03-06** (M) Patient profile page shell with tabs (Overview, Appointments, Visits, Billing) · _M03-05_ — `/patients/{id}`; header code/name/age/gender/old ID/phone/guardian; overview + "others on this number"; tabs shown by permission, placeholders until M04/M05/M07; merged record opens the survivor; search, quick search, form and duplicate panel link here
-- [ ] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_
+- [x] **M03-07** (S) Seed 2,000+ fictional patients; check search speed · _M03-04_ — `PatientSeeder` (DEMO_PATIENTS, default 2,000; families on one phone, children with guardian, old IDs, age-only, inactive, a few likely duplicates); tests/Performance: 20,000 patients, every search ≈20–30 ms
 
 ### M04 Appointments & queue
 - [ ] **M04-01** (S) appointment_types + appointments migrations, `AppointmentStatus` enum with allowed transitions 🧪 · _M02-01, M03-01_

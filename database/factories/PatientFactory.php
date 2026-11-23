@@ -17,14 +17,14 @@ class PatientFactory extends Factory
     {
         $gender = fake()->randomElement(['male', 'female']);
         $knowsBirthday = fake()->boolean(70);
-        $registered = fake()->dateTimeBetween('-3 years', 'now');
+        $registered = fake()->dateTimeBetween(now()->subYears(3), now()); // Carbon now(): respects frozen test time
 
         return [
             'patient_code' => 'TEST-'.fake()->unique()->numerify('#######'),
             'registered_on' => $registered,
             'full_name' => fake_bd()->name($gender),
             'gender' => $gender,
-            'date_of_birth' => $knowsBirthday ? fake()->dateTimeBetween('-80 years', '-3 years') : null,
+            'date_of_birth' => $knowsBirthday ? fake()->dateTimeBetween(now()->subYears(80), now()->subYears(3)) : null,
             'age_years' => $knowsBirthday ? null : fake()->numberBetween(5, 75),
             'age_recorded_on' => $knowsBirthday ? null : $registered,
             'phone' => fake_bd()->phone(),
